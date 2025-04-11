@@ -1,0 +1,2053 @@
+分类，多标签模型调优总结
+
+TextCNN调优
+这个配置是针对一个基于卷积神经网络（CNN）的文本处理模型，特别是TextCNN模型。TextCNN是一种常用于文本分类的深度学习模型，它使用多个不同尺寸的卷积核来提取文本中的特征。下面是对这个配置中各个参数的解释：
+* 		"kernel_sizes": 这是一个列表，包含了不同的卷积核尺寸。在TextCNN中，每个卷积核尺寸对应于在文本中扫描不同数量的连续单词（或词向量）。例如，尺寸为7的卷积核将覆盖7个连续的单词。在这个配置中，有三种尺寸的卷积核：7、8和9。
+* 		"num_kernels": 这表示每种尺寸的卷积核的数量。在这个例子中，每种尺寸（7、8、9）的卷积核都有128个。更多的卷积核意味着模型可以学习到更丰富的特征，但也会增加模型的复杂度和计算成本。
+* 		"top_k_max_pooling": 这个参数用于控制在最大池化（max pooling）步骤中要保留的最高值的数量。最大池化是一种降维操作，它从卷积层的输出中提取最显著的特征。在这个配置中，top_k_max_pooling 设置为1，意味着只保留每个卷积后特征图中的最大值。
+调整这些参数以优化多标签预测性能时，你可以考虑以下方面：
+* 卷积核尺寸：不同尺寸的卷积核可以捕捉到文本中不同长度的语义信息。如果你的文本数据中存在多种长度和结构的重要特征，可以尝试使用多种尺寸的卷积核。
+* 卷积核数量：增加每种尺寸卷积核的数量可以帮助模型学习更多的特征，但也会增加计算成本和过拟合的风险。你需要在模型性能和计算效率之间找到平衡。
+* 池化策略：对于多标签分类，可能需要从卷积层的输出中提取更丰富的信息。调整top_k_max_pooling的值可以改变池化层的行为。例如，使用更大的k值可以保留更多的特征信息，但同时也可能捕捉到噪声。
+
+
+
+多标签分类结果:
+
+##########################################
+小样本（原始的）
+--- Distribution in train.json ---
+Label: 新车资讯, Count: 12428, Ratio: 43.72%
+Label: 其他, Count: 15997, Ratio: 56.28%
+--- Distribution in dev.json ---
+Label: 其他, Count: 5376, Ratio: 56.74%
+Label: 新车资讯, Count: 4099, Ratio: 43.26%
+--- Distribution in test.json ---
+Label: 其他, Count: 5262, Ratio: 55.53%
+Label: 新车资讯, Count: 4214, Ratio: 44.47%
+##########################################
+
+
+fastText  小样本 (多标签)
+
+Performance is precision: 0.787470, recall: 0.640598, fscore: 0.706481, right: 5832, predict: 7406, standard: 9104.
+
+
+textCNN 小样本 (多标签)
+Performance is precision: 0.738353, recall: 0.680690, fscore: 0.708350, right: 6197, predict: 8393, standard: 9104.
+
+textCNN 小样本 (多标签,字编码)
+Performance is precision: 0.781358, recall: 0.620606, fscore: 0.691766, right: 5650, predict: 7231, standard: 9104.
+
+
+textCNN 小样本 (二分类)
+Performance is precision: 0.795128, recall: 0.906265, fscore: 0.847067, right: 3819, predict: 4803, standard: 4214.
+
+textCNN 小样本 (二分类,字编码)
+Performance is precision: 0.784519, recall: 0.889891, fscore: 0.833889, right: 3750, predict: 4780, standard: 4214.
+
+
+textCNN 小样本（二分类，升级参数）
+Performance is precision: 0.844551, recall: 0.860210, fscore: 0.852308, right: 3526, predict: 4175, standard: 4099.
+
+
+##########################################
+大样本
+--- Distribution in train.json ---
+Label: 新车资讯, Count: 74732, Ratio: 19.37%
+Label: 其他, Count: 311013, Ratio: 80.63%
+--- Distribution in dev.json ---
+Label: 其他, Count: 103800, Ratio: 80.73%
+Label: 新车资讯, Count: 24781, Ratio: 19.27%
+--- Distribution in test.json ---
+Label: 其他, Count: 116369, Ratio: 90.50%
+Label: 新车资讯, Count: 12214, Ratio: 9.50%
+##########################################
+
+Textcnn 分类器，基于中文的，搜狗词向量
+precision    recall  f1-score   support
+
+  newcarinto     0.8952    0.9620    0.9274     79583
+       other     0.7212    0.4664    0.5665     16791
+
+    accuracy                         0.8756     96374
+   macro avg     0.8082    0.7142    0.7469     96374
+weighted avg     0.8649    0.8756    0.8645     96374
+
+
+
+
+
+
+##########################################
+采样样本（源于大样本）
+--- Distribution in train.json ---
+Label: 其他, Count: 40444, Ratio: 80.89%
+Label: 新车资讯, Count: 9556, Ratio: 19.11%
+--- Distribution in dev.json ---
+Label: 其他, Count: 40421, Ratio: 80.84%
+Label: 新车资讯, Count: 9579, Ratio: 19.16%
+--- Distribution in test.json ---
+Label: 其他, Count: 45169, Ratio: 90.34%
+Label: 新车资讯, Count: 4831, Ratio: 9.66%
+##########################################
+textCNN 小样本（二分类）
+Performance is precision: 0.131068, recall: 0.005589, fscore: 0.010721, right: 27, predict: 206, standard: 4831.
+
+
+
+##########################################
+采样平衡样本（源于大样本）
+--- Distribution in train.json ---
+Label: 其他, Count: 50000, Ratio: 50.00%
+Label: 新车资讯, Count: 50000, Ratio: 50.00%
+--- Distribution in dev.json ---
+Label: 其他, Count: 50000, Ratio: 66.86%
+Label: 新车资讯, Count: 24781, Ratio: 33.14%
+--- Distribution in test.json ---
+Label: 其他, Count: 50000, Ratio: 80.37%
+Label: 新车资讯, Count: 12214, Ratio: 19.63%
+##########################################
+
+
+
+'''
+标签比例: {
+'谍照': 0.005101810676161012,
+'实车曝光': 0.004541855845850657,
+'配置曝光': 0.007949803160322845,
+'申报图': 0.00399278902612967,
+'预热': 0.025571270584172877,       Precision: 0.6582, Recall: 0.2826, F1-Score: 0.3954
+'新车上市': 0.05453804504214438,    Precision: 0.5899, Recall: 0.3079, F1-Score: 0.4046
+'预售': 0.01651244577381869,     Precision: 0.6562, Recall: 0.2019, F1-Score: 0.3088
+'发布亮相': 0.030430434167199403,   0.4894, Recall: 0.1257, F1-Score: 0.2000
+'新车官图': 0.004448530040798931,
+'新车报价': 0.05555840717737658,     Precision: 0.6011, Recall: 0.3245, F1-Score: 0.4215
+'新车到店': 0.0012707863787876667,
+'新车解析': 0.14806138971456304,    Precision: 0.6226, Recall: 0.3347, F1-Score: 0.4354
+'全0样本': 0.8321737602055657}   这是真实样本的数据分布
+
+我发现，样本数量至少大于0.01以上才行(1%)，最好是10%以上才行
+
+Ep:1 Label 谍照 - Precision: 0.0000, Recall: 0.0000, F1-Score: 0.0000
+Ep:1 Label 实车曝光 - Precision: 0.0000, Recall: 0.0000, F1-Score: 0.0000
+Ep:1 Label 配置曝光 - Precision: 0.0000, Recall: 0.0000, F1-Score: 0.0000
+Ep:1 Label 申报图 - Precision: 0.0000, Recall: 0.0000, F1-Score: 0.0000
+Ep:1 Label 预热 - Precision: 0.6582, Recall: 0.2826, F1-Score: 0.3954
+Ep:1 Label 新车上市 - Precision: 0.5899, Recall: 0.3079, F1-Score: 0.4046
+Ep:1 Label 预售 - Precision: 0.6562, Recall: 0.2019, F1-Score: 0.3088
+Ep:1 Label 发布亮相 - Precision: 0.4894, Recall: 0.1257, F1-Score: 0.2000
+Ep:1 Label 新车官图 - Precision: 0.0000, Recall: 0.0000, F1-Score: 0.0000
+Ep:1 Label 新车报价 - Precision: 0.6011, Recall: 0.3245, F1-Score: 0.4215
+Ep:1 Label 新车到店 - Precision: 0.0000, Recall: 0.0000, F1-Score: 0.0000
+Ep:1 Label 新车解析 - Precision: 0.6226, Recall: 0.3347, F1-Score: 0.4354
+-----------------------------------------------------------------------------
+Epoch: 2 Label 谍照 - Precision: 0.0000, Recall: 0.0000, F1-Score: 0.0000
+Epoch: 2 Label 实车曝光 - Precision: 0.0000, Recall: 0.0000, F1-Score: 0.0000
+Epoch: 2 Label 配置曝光 - Precision: 0.0000, Recall: 0.0000, F1-Score: 0.0000
+Epoch: 2 Label 申报图 - Precision: 0.0000, Recall: 0.0000, F1-Score: 0.0000
+Epoch: 2 Label 预热 - Precision: 0.5556, Recall: 0.0932, F1-Score: 0.1596
+Epoch: 2 Label 新车上市 - Precision: 0.6793, Recall: 0.3613, F1-Score: 0.4717
+Epoch: 2 Label 预售 - Precision: 0.6471, Recall: 0.1028, F1-Score: 0.1774
+Epoch: 2 Label 发布亮相 - Precision: 0.5672, Recall: 0.1727, F1-Score: 0.2648
+Epoch: 2 Label 新车官图 - Precision: 0.0000, Recall: 0.0000, F1-Score: 0.0000
+Epoch: 2 Label 新车报价 - Precision: 0.6478, Recall: 0.4507, F1-Score: 0.5316
+Epoch: 2 Label 新车到店 - Precision: 0.0000, Recall: 0.0000, F1-Score: 0.0000
+Epoch: 2 Label 新车解析 - Precision: 0.6121, Recall: 0.3713, F1-Score: 0.4622
+Epoch: 2 Label 其他 - Precision: 0.9003, Recall: 0.9445, F1-Score: 0.9219
+'''
+
+
+解决思路
+1，使用正采样提高样本的数量——通过复制正样本数量
+2，把样本少的标签提出来单独用其他模型进行训练
+
+
+* 		改变损失函数权重：
+    * 在损失函数中为不同的类别赋予不同的权重，使得模型对少数类别的错误分类更加敏感。在多标签分类问题中，可以使用加权版本的损失函数，如加权的二元交叉熵损失（Weighted Binary Cross-Entropy Loss）。
+    * 例如，在PyTorch中，您可以使用torch.nn.BCEWithLogitsLoss并设置pos_weight参数为一个向量，该向量包含每个类别的权重。
+* 		python Copy codeclass_weights = [1.0, 2.0, 3.0, ...] # 根据类别的不平衡程度设定权重 pos_weights = torch.tensor(class_weights).to(device) criterion = torch.nn.BCEWithLogitsLoss(pos_weight=pos_weights)  
+* 		使用数据增强：
+    * 对于少数类别的样本，使用数据增强技术来生成更多的变体样本。这可以包括文本数据的词语替换、句子重组等技术。
+* 		集成学习方法：
+    * 使用不同的模型或模型配置并结合它们的预测结果。这可以包括简单的方法，如投票或平均，以及更复杂的方法，如Stacking或Boosting。
+    * 例如，可以训练多个模型，其中一些模型专门针对少数类别进行优化，然后将这些模型的输出合并。
+* 		使用过采样技术：
+    * 使用SMOTE（合成少数过采样技术）或类似算法来合成新的少数类别样本，而不是简单地复制现有样本。
+    * 在文本数据中实现SMOTE可能比较复杂，因为它通常用于数值型数据。在这种情况下，可以考虑自然语言处理领域的类似技术，如文本数据增强。
+* 		超参数调整：
+    * 调整模型的超参数，如学习率、层数、隐藏单元数等，以找到最佳的模型配置。
+
+
+
+
+* 		阈值 (Threshold): 阈值用于将模型输出的概率转换为二进制标签（即是否选择某个标签）。在多标签分类中，模型为每个标签输出一个概率值，表示该标签适用于给定输入的程度。阈值用于决定哪些标签的概率足够高，可以被认为是有效的预测。例如，如果阈值设置为 0.5，那么所有概率大于或等于 0.5 的标签将被视为预测为该类别。
+    * 减小阈值会导致更多的标签被视为预测正确，可能会增加召回率（Recall），但同时可能会降低精确度（Precision）。
+    * 增加阈值通常会提高精确度（因为只有更高概率的标签被选中），但可能降低召回率（因为一些真实的标签可能因概率不足而被错过）。
+* 		top-k: 在某些多标签分类模型中，可能会为每个样本选择概率最高的k个标签。这对于标签数量很多，但每个样本通常只有少数标签适用的情况特别有用。
+    * 增加 top-k 的值允许更多的标签被选为可能的预测标签，可能提高召回率但降低精确度。
+    * 减少 top-k 的值会限制预测标签的数量，可能提高精确度但降低召回率。
+根据您的实际需求调整这些参数。如果您的目标是捕获尽可能多的相关标签，那么可能需要减小阈值或增加top-k。如果您更关注确保预测标签的准确性，则应增加阈值或减少top-k。在实际应用中，通常需要通过实验来找到这些参数的最佳平衡点。
+
+
+我们可以这样吗？对于样本低于1%的可以使用二分类尝试来提高，第一版就是尽量预测那些样本多的标签，P值高，样本少的标签记录下来，后期通过其他方式来提高，比如二分类
+
+是的，您提出的方法是一个可行的策略，尤其适用于处理不平衡数据集的情况。这种方法可以分为两个阶段：
+第一阶段：多标签分类
+在这个阶段，您专注于那些样本数量较多的标签，利用多标签分类模型来获取尽可能准确的预测结果。由于这些标签的样本数量较多，模型可以更好地学习到这些标签的特征，从而提高总体的精确度（Precision）。
+第二阶段：二分类模型
+对于样本数量较少的标签，由于在多标签分类模型中它们可能不会得到很好的预测结果，您可以单独为这些标签建立二分类模型。在这种情况下，每个二分类模型专注于一个特定的标签，判断一个样本是否属于这个标签。这种方法的优点是模型可以更专注于学习识别这些少数标签的特征。
+实施建议
+* 		数据预处理：在第一阶段，正常训练多标签分类模型。在第二阶段，为每个样本数量较少的标签准备数据集，其中每个样本标记为“是”或“否”（即属于该标签或不属于）。
+* 		模型选择：对于第一阶段，可以选择适合多标签分类的模型，如TextCNN、BERT等。对于第二阶段，可以使用相同的模型架构，但需要针对每个标签单独训练。
+* 		后处理：在应用模型时，先使用多标签模型获取预测结果，然后对于那些样本数量较少的标签，使用对应的二分类模型进一步校正或确认预测结果。
+* 		性能评估：独立评估两个阶段的模型性能，并在需要时调整策略。可能需要对二分类模型进行特别的优化，以应对不平衡数据的挑战。
+* 		集成方法：在某些情况下，可以尝试将两个阶段的模型输出进行某种形式的集成，以达到更好的总体性能。
+
+
+
+
+对于小样本数据集来说，单独训练二分类模型相较于在多标签分类中可能确实会有更好的效果，主要原因包括：
+* 		专注度和简化问题：在多标签分类中，模型需要学习区分所有可能的标签组合，这增加了学习的复杂性。对于小样本的标签，模型可能无法获得足够的信息来准确学习它们与其他标签的区别。而二分类模型只专注于区分一个特定的类别与其他类别，这简化了学习任务。
+* 		类别不平衡问题：在多标签分类中，小样本的类别容易被其他样本量更大的类别所掩盖，导致模型对这些少数类别的学习不足。而单独的二分类模型可以专门针对这个小样本类别进行训练和调优，从而提高对这个特定类别的识别能力。
+* 		模型定制：对于每个小样本类别单独训练的二分类模型，可以根据该类别的特性来定制模型架构、选择合适的特征和调整超参数，从而得到更优的模型。
+* 		过拟合风险降低：在多标签分类中，如果某些类别的样本非常少，模型可能过分学习这些少量样本的特点（过拟合），而不是学习到更一般的、能够泛化的模式。二分类模型由于问题简化，有时候更容易避免过拟合问题。
+* 		数据增强和采样策略：在二分类模型中，可以更方便地使用各种数据增强技术和采样策略（如过采样少数类别或欠采样多数类别），这在多标签分类中可能难以实现或效果不佳。
+然而，值得注意的是，这种方法可能需要训练多个模型，每个模型只能识别一个类别，这可能会增加模型管理和推理时的复杂性。在实际应用中，选择哪种方法应基于具体任务、数据的特性和实际可行性进行权衡。
+
+
+(增加权重)
+您提出的策略，即使用两个不同的模型（BERT和TextCNN）进行预测，并取两者预测结果的交集作为最终的标签，是一种常见的模型融合（model ensemble）方法。模型融合通常可以提高预测的准确性，尤其是当各个模型有不同的强项和弱点时。
+在您的案例中，BERT和TextCNN是两种不同的神经网络架构。BERT是一个基于Transformer的模型，擅长捕捉长距离依赖和上下文信息。TextCNN是基于卷积神经网络，能够有效捕捉局部特征。这两种模型在处理文本数据时各有优势：
+* 		互补性：BERT和TextCNN在处理文本时的关注点不同，所以它们可能会捕捉到不同的特征，这种互补性有助于提高整体性能。
+* 		减少误判：通过取两个模型预测结果的交集，您可能会减少每个模型独自预测时的假阳性（误判为某个标签），从而提高精确度（precision）。
+然而，也有一些潜在的限制和考虑因素：
+* 召回率下降：虽然取交集可能提高精确度，但可能会降低召回率（recall），因为只有当两个模型都预测正确时才会被认为是正确的。
+* 计算成本：运行两个模型会增加计算成本和推理时间。
+* 数据依赖性：模型融合的效果在很大程度上依赖于数据的特性，对于某些数据集或任务，效果可能不如预期。
+实践建议：
+* 验证和测试：在实际应用之前，最好在一个验证集上测试这种方法的效果，以确保它确实能提高性能。
+* 召回率与精确度的权衡：根据您的应用需求，考虑召回率和精确度之间的权衡。如果精确度更重要，那么这种方法可能是有效的。
+* 进一步的模型融合策略：除了简单的交集，您还可以探索更复杂的融合策略，比如加权融合、投票机制或使用机器学习方法来结合不同模型的预测结果。
+
+
+可以在预测阶段直接忽视掉标签数量少导致指标低的标签，因为不符合预期
+
+
+精准率和召回率这两个指标有时精准率低一些有时召回率低一些，有时可能都低。那么实际中用哪个指标比较好呢？这一般和应用场景有关，对于有些场景，我们更注重精准率，比如股票预测，假设预测的是一个二分类问题：股票会升还是降，显然为了利润我们关注的是升（即上升为类1），为什么这种情况下精准率指标更好呢？因为精准率是所有分类为1的预测中有多少是正确的，对本例也就是预测未来股票上升有多少是对的，这更复合我们的利润最大决策。而召回率是实际上升的股票中我们预测对了多少，基于风险投资理念，有很多股票会上升的时刻，我们就算落掉一些也是没有关系的，没有投资进去也就没有损失，更重要的是我们的决策中有多少能赚钱，所以在这种场景下，精准率更好。
+而如果在医疗领域，则是召回率更加重要，也就是要能在实际得病的人中尽量预测的更加准确，我们不想漏掉任何真正患病的人，这样才更有可能挽回一些人的生命，而精准率低些（没病的被预测为有病）并不会导致特别严重的后果，只是进行了一些过度医疗。
+
+
+
+
+还有一种提高小样本检索准确率的方法，也就是语义搜索增强，也就是计算小样本的embedding，然后新的样本进来就选择最相似的top5个样本，哪个标签最多就选哪个，这个好处就是不用再进行微调（不知道p值怎么样）
+
+这个是BERT的多标签分类
+Validation Batch 2000 - Loss: 0.104190
+Label 1 - Precision: 0.0000, Recall: 0.0000, F1-Score: 0.0000
+Label 2 - Precision: 1.0000, Recall: 0.1429, F1-Score: 0.2500
+Label 3 - Precision: 0.0000, Recall: 0.0000, F1-Score: 0.0000
+Label 4 - Precision: 0.0000, Recall: 0.0000, F1-Score: 0.0000
+Label 5 - Precision: 1.0000, Recall: 0.0095, F1-Score: 0.0189
+Label 6 - Precision: 0.5000, Recall: 0.0040, F1-Score: 0.0079
+Label 7 - Precision: 0.0000, Recall: 0.0000, F1-Score: 0.0000
+Label 8 - Precision: 1.0000, Recall: 0.0169, F1-Score: 0.0333
+Label 9 - Precision: 0.0000, Recall: 0.0000, F1-Score: 0.0000
+Label 10 - Precision: 0.8333, Recall: 0.0153, F1-Score: 0.0301
+Label 11 - Precision: 0.0000, Recall: 0.0000, F1-Score: 0.0000
+Label 12 - Precision: 0.8333, Recall: 0.0523, F1-Score: 0.0985
+Label 13 - Precision: 0.7986, Recall: 0.9976, F1-Score: 0.8871
+Epoch: 20       Average Training Loss: 0.000008         Average Validation Loss: 0.000033
+Validation loss decreased (0.000033 --> 0.000033). Saving model ...
+
+BERT模型的结果
+Label: 其他, Precision: N/A, Recall: N/A, F-Score: N/A
+Label: 新车解析, Precision: 0.6792452830188679, Recall: 0.2227580872651167, F-Score: 0.33549182855380816
+Label: 新车报价, Precision: 0.6245753114382786, Recall: 0.2501701066001361, F-Score: 0.3572469635627531
+Label: 新车上市, Precision: 0.732612055641422, Recall: 0.05671213208901651, F-Score: 0.10527484730705164
+Label: 发布亮相, Precision: 0, Recall: 0.0, F-Score: 0
+Label: 预热, Precision: 0.5, Recall: 0.00027434842249657066, F-Score: 0.0005483959418700302
+Label: 预售, Precision: 0, Recall: 0.0, F-Score: 0
+Label: 配置曝光, Precision: 0, Recall: 0.0, F-Score: 0
+Label: 谍照, Precision: 0.6403326403326404, Recall: 0.4041994750656168, F-Score: 0.4955752212389381
+Label: 实车曝光, Precision: 0.0, Recall: 0.0, F-Score: 0
+Label: 新车官图, Precision: 0, Recall: 0.0, F-Score: 0
+Label: 申报图, Precision: 0, Recall: 0.0, F-Score: 0
+Label: 新车到店, Precision: 0, Recall: 0.0, F-Score: 0
+Epoch 30 cost time: 1334 second
+Best test performance at epoch 1 is precision: 0.04874446085672083, recall: 0.0016690269067367995, fscore: 0.00322754168908015, macro-fscore: 0.0007294615490475065, right: 33, predict: 677, standard: 19772. Loss is: 0.11937847564777057.
+
+
+这个就是典型的few shot classification的问题，经常被包装成玄学的meta learning。
+目前市面上效果最好的模型反而是最简单的模型，简单来说就是一个pre-trained feature encoder + 一个distance metric就可以直接比较样本来做分类了。
+
+
+特征：这里用的是词向量表示方式
+* 数据量较大：可以直接随机初始化embeddings，然后基于语料通过训练模型网络来对embeddings进行更新和学习。
+* 数据量较小：可以利用外部语料来预训练(pre-train)词向量，然后输入到Embedding层，用预训练的词向量矩阵初始化embeddings。（通过设置weights=[embedding_matrix]）。
+    * 静态(static)方式：训练过程中不再更新embeddings。实质上属于迁移学习，特别是在目标领域数据量比较小的情况下，采用静态的词向量效果也不错。（通过设置trainable=False）
+    * 非静态(non-static)方式：在训练过程中对embeddings进行更新和微调(fine tune)，能加速收敛。（通过设置trainable=True）
+    *
+
+
+
+重采样的目的： 重采样以平衡数据集确实有可能提高模型对于正样本的precision（准确率），尤其是在原始数据集中正样本（或某些类别）被大量少数类别所压倒的情况下。然而，这种方法的效果可能会因情况而异，依赖于多个因素：
+* 		数据的本质：如果少数类别的样本本质上与多数类别非常不同，那么重采样可能会帮助模型更好地学习这些差异，从而提高少数类别（也可能是正样本）的准确率。
+* 		过拟合风险：在对少数类别进行过采样时，尤其是通过简单复制样本的方式，可能会导致模型过度适应这些重复的样本，从而在未见过的数据上表现不佳。
+* 		复杂度和噪声：对多数类别进行欠采样可能会去除一些重要的信息，这可能会对模型的总体性能产生负面影响。此外，如果少数类别的样本包含较多噪声，重采样可能会进一步放大这些噪声。
+* 		性能评估的多样性：在处理不平衡的数据集时，单纯关注precision可能不足以全面评估模型的性能。其他指标，如召回率（recall）和F1分数，也很重要，因为它们提供了关于模型在正样本和负样本上性能的更全面视角。
+总的来说，重采样平衡数据集是处理不平衡数据集的一种有效方法，可以提高模型在特定类别上的准确率，但同时也要注意可能的副作用，如过拟合和信息丢失。因此，在实际应用中，建议同时考虑和评估多种性能指标，并在真实或更广泛的数据集上进行测试，以确保模型的泛化能力。此外，也可以考虑使用其他技术，如改变损失函数权重或使用集成方法，来进一步提高模型的性能。
+
+
+长尾问题（样本不平衡）思路：
+
+1、从数据入手，通过过采样或降采样等手段，使得每个batch内的类别变得更为均衡一些；
+2、从loss入手，经典的做法就是类别
+3、从结果入手，对正常训练完的模型在预测阶段做些调整，更偏向于低频类别，比如正样本远少于负样本，我们可以把预测结果大于0.2（而不是0.5）都视为正样本。
+
+
+https://pan.baidu.com/s/1foloksyrliyDyzd-UCa2ug   infected解压密码
+
+
+https://gitee.com/liuyaox/roadmap_nlp/blob/master/10-Text_Classification.md#https://gitee.com/link?target=https%3A%2F%2Fwww.zhihu.com%2Fquestion%2F265357659%2Fanswer%2F578944550  文本分类tricks
+
+https://mp.weixin.qq.com/s?__biz=MzIwNzc2NTk0NQ==&mid=2247484993&idx=1&sn=0bd32089a638e5a1b48239656febb6e0&chksm=970c2e97a07ba7818d63dddbb469486dccb369ecc11f38ffdea596452b9e5bf65772820a8ac9&token=407616831&lang=zh_CN#rd
+
+Fewshot 的思路:
+https://zhuanlan.zhihu.com/p/32940093
+
+
+https://github.com/km1994/RES-Interview-Notes
+https://github.com/km1994/NLP-Interview-Notes
+https://github.com/km1994/nlp_paper_study?tab=readme-ov-file
+
+https://github.com/shibing624/text2vec/wiki/%E8%85%BE%E8%AE%AF%E8%AF%8D%E5%90%91%E9%87%8F%E4%BB%8B%E7%BB%8D  腾讯词向量
+https://github.com/xmxoxo/Tencent_ChineseEmbedding_Process  词向量操作
+
+
+
+多标签用BERT large的中文模型wwm-large,然后二分类用textcnn就可以，比较快速，训练指标可以达到0.9以上
+
+
+=============================================================
+
+docker
+
+
+docker run -dit --network=host  -e TZ=Asia/Shanghai -v /data/david:/data/david --name=david_classifier --gpus '"device=1”’  -e "LC_ALL=zh_CN.UTF-8" -e "LANGUAGE=zh_CN.UTF-8" -e "LANG=zh_CN.UTF-8" pytorch/pytorch:2.0.1-cuda11.7-cudnn8-devel
+
+
+docker run -dit --network=host -e TZ=Asia/Shanghai -v /data:/root/data --name=david_classifer --gpus '"device=1"' -e "LC_ALL=zh_CN.UTF-8" -e "LANGUAGE=zh_CN.UFT-8" -e "LANG=zh_CN.UFT-8" pytorch/pytorch:2.0.1-cuda11.7-cudnn8-devel
+
+这条命令是用来启动一个Docker容器，使用的是docker run命令，具体参数和它们的含义如下：
+* -dit: 这是三个参数的组合。-d表示以后台模式运行容器，-i表示即使没有附加也保持STDIN开放，-t分配一个伪终端。组合起来，这意味着你以分离模式启动容器，但是还为它分配了一个可用于交互的伪终端。
+* --network=host: 这个参数告诉Docker容器使用宿主机的网络堆栈。这样，容器内的应用程序可以直接监听宿主机的网络端口，不需要端口映射。
+* -e TZ=Asia/Shanghai: 设置环境变量TZ（时区）为Asia/Shanghai，意味着容器内的时间将会调整为上海的时间。
+* -v /data01:/root/data01: 将宿主机的/data01目录挂载到容器的/root/data01。这样，容器内外的这两个目录会同步，容器可以直接访问和修改宿主机的这个目录中的文件。
+* --name=cuda_test_n: 指定容器的名称为cuda_test_n，方便日后管理（如启动、停止等）。
+* --gpus '"device=0"': 分配给容器使用的GPU设备，这里指定为宿主机上的第一个GPU设备。这要求宿主机已经安装了NVIDIA Docker支持。
+* -e "LC_ALL=zh_CN.UTF-8": 设置环境变量LC_ALL为zh_CN.UTF-8，用于支持中文环境。
+* -e "LANGUAGE=zh_CN.UTF-8": 设置环境变量LANGUAGE为zh_CN.UTF-8，用于定义程序运行时使用的语言。
+* -e "LANG=zh_CN.UTF-8": 设置环境变量LANG为zh_CN.UTF-8，这也是一个本地化设置，用于确定程序的语言、货币格式、数值格式等。
+* pytorch/pytorch:2.0.1-cuda11.7-cudnn8-devel: 指定使用的Docker镜像是pytorch/pytorch，标签为2.0.1-cuda11.7-cudnn8-devel。这意味着容器将安装PyTorch 2.0.1版本，支持CUDA 11.7和cuDNN 8，并且是开发版本，包含了用于开发的工具和库。
+综上所述，这条命令启动了一个配置为中文环境，使用宿主机网络，具有GPU支持，并且将宿主机的某个目录挂载到容器内部的PyTorch Docker容器。这个容器适用于需要GPU加速的PyTorch开发和运行环境。
+
+
+启动完，可以通过docker ps -a 看到状态是up就是成功了
+
+启动成功后再通过 docker exec -it 容器名 /bin/bash  进入容器
+
+
+
+# 列出本机正在运行的容器
+$ docker container ls
+
+# 列出本机所有容器，包括终止运行的容器
+$ docker container ls --all
+
+docker container rm [containerID]
+
+
+$ docker container run -p 8000:3000 -it koa-demo /bin/bash
+# 或者
+$ docker container run -p 8000:3000 -it koa-demo:0.0.1 /bin/bash
+上面命令的各个参数含义如下：
+* 		-p参数：容器的 3000 端口映射到本机的 8000 端口。
+* 		-it参数：容器的 Shell 映射到当前的 Shell，然后你在本机窗口输入的命令，就会传入容器。
+* 		koa-demo:0.0.1：image 文件的名字（如果有标签，还需要提供标签，默认是 latest 标签）。
+* 		/bin/bash：容器启动以后，内部第一个执行的命令。这里是启动 Bash，保证用户可以使用 Shell。
+
+
+现在，在容器的命令行，按下 Ctrl + c 停止 Node 进程，然后按下 Ctrl + d （或者输入 exit）退出容器
+
+
+
+上面的 Dockerfile 里面，多了最后一行CMD node demos/01.js，它表示容器启动后自动执行node demos/01.js。
+你可能会问，RUN命令与CMD命令的区别在哪里？简单说，RUN命令在 image 文件的构建阶段执行，执行结果都会打包进入 image 文件；CMD命令则是在容器启动后执行。另外，一个 Dockerfile 可以包含多个RUN命令，但是只能有一个CMD命令。
+注意，指定了CMD命令以后，docker container run命令就不能附加命令了（比如前面的/bin/bash），否则它会覆盖CMD命令。现在，启动容器可以使用下面的命令。
+
+docker container start [containerID]     #前面的docker container run命令是新建容器，每运行一次，就会新建一个容器。
+
+docker container exec -it [containerID] /bin/bash
+
+docker container cp [containID]:[/path/to/file] .       # 容器文件拷贝
+
+
+docker cp example.txt mycontainer:/usr/share/nginx/html/example.txt    # 文件拷贝
+
+https://github.com/jaywcjlove/docker-tutorial
+
+当您运行docker run命令来启动一个Docker容器时，如果命令末尾没有指定要执行的命令（如/bin/bash），Docker会使用镜像中定义的默认命令来启动容器。这个默认命令是在构建镜像时通过Dockerfile中的CMD指令指定的。
+在您提供的命令中：
+
+* 如果pytorch/pytorch:2.0.1-cuda11.7-cudnn8-devel镜像的Dockerfile中已经指定了一个默认命令（CMD），那么容器将会使用这个命令启动。对于许多应用镜像，这个默认命令通常是启动应用程序的命令。
+* 如果没有指定/bin/bash或其他命令，意味着您不打算立即以交互模式进入容器的shell环境。容器会在后台运行，并执行其默认命令。
+可以不指定/bin/bash的原因是：
+* 非交互式服务：许多容器是为了运行后台服务而设计的，比如Web服务器、数据库等，这些服务不需要交互式shell来启动或运行。
+* 自动化操作：容器可能被设计为执行特定的任务或脚本，然后退出。这种情况下，启动时运行一个指定的命令或脚本比进入一个交互式shell更有意义。
+* 镜像设计：镜像可能被设计为在启动时自动执行必要的初始化脚本或命令，然后运行一个或多个后台进程。
+如果您需要以交互式方式进入容器进行操作或调试，可以在容器启动后使用docker exec -it 容器名 /bin/bash命令，这样可以在容器运行的任何时刻“附加”进入容器的shell环境。这种方式提供了灵活性，允许用户根据需要进入和退出容器的环境。
+
+在使用 -d 参数时，容器启动后会进入后台。此时想要进入容器，可以通过以下指令进入：
+* 		docker attach
+* 		docker exec：推荐大家使用 docker exec 命令，因为此命令会退出容器终端，但不会导致容器的停止。
+
+
+要从外部访问在Docker容器中运行的Flask Web服务，您需要在启动容器时进行端口映射，将容器内部使用的端口映射到宿主机的一个端口上。在您提供的命令示例中，使用了-P或-p参数来实现端口映射，但是在您之前提到的命令中，这样的端口映射并没有设置。这就是为什么即使Flask服务在容器内部启动了，您也无法从外部访问它的原因。
+解决方案
+如果您已经在容器内启动了Flask服务，并且希望从外部访问它，您需要重新启动容器并在命令中包含端口映射参数。对于Flask应用，默认情况下，它在容器内部监听8080端口（假设您将应用配置为在8080端口上监听）。您可以将这个端口映射到宿主机的端口上，例如：
+
+docker run -dit --network=host -e TZ=Asia/Shanghai -v /data01:/root/data01 --name=cuda_test_n --gpus '"device=0"' -e "LC_ALL=zh_CN.UTF-8" -e "LANGUAGE=zh_CN.UTF-8" -e "LANG=zh_CN.UTF-8" -p 8080:8080 pytorch/pytorch:2.0.1-cuda11.7-cudnn8-devel
+这里，-p 8080:8080参数指示Docker将宿主机的8080端口映射到容器的8080端口上。这样，当您访问宿主机的8080端口时，实际上就是访问容器内部运行的Flask服务。
+注意事项
+* 		端口冲突：确保宿主机上没有其他服务占用8080端口，否则端口映射将失败。
+* 		Flask应用配置：确保您的Flask应用配置为在所有接口上监听（host='0.0.0.0'），而不仅仅是localhost，这样才能从容器外部访问它。
+* 		使用--network=host：在某些情况下，如果您直接使用宿主机网络（通过--network=host），则不需要端口映射（-p参数），因为容器将直接使用宿主机的网络。不过，这种方式与端口映射的使用方式相比，有更少的隔离性，并且可能会引入安全风险。
+
+
+https://www.runoob.com/docker/docker-image-usage.html   把容器构建为镜像
+
+
+Docker ps -a 查看所有容器
+Docker rm containerID  删除容器
+
+
+
+要确定 Docker 容器的存储位置和大小，您需要了解 Docker 的存储驱动和数据存放的方式。Docker 使用存储驱动（如 overlay2、aufs、devicemapper 等）来管理容器和镜像的文件系统。容器的实际运行数据（包括写入的数据和更改的文件）通常存放在 Docker 的数据目录下，这个目录默认是 /var/lib/docker/（在大多数 Linux 发行版上）。
+确定容器的存储位置
+* 		Docker 数据目录：Docker 的默认数据目录是 /var/lib/docker/，但这个位置可以通过配置 Docker daemon 的启动参数 --data-root 来更改。
+* 		容器数据目录：在 Docker 数据目录下，每个存储驱动都有自己的子目录，例如 overlay2 存储驱动的数据就存放在 /var/lib/docker/overlay2/ 下。容器的层（layers）和可写层的具体位置取决于所使用的存储驱动。
+查看容器的大小
+Docker CLI 提供了 docker system df 命令来显示 Docker 对象占用的空间，包括镜像、容器和卷的大小。
+bash
+
+Copy code
+docker system df
+如果您想要查看特定容器的大小，可以使用 docker ps -s 命令，它会列出所有运行中的容器及其大小。-s 或 --size 选项会显示每个容器的大小（包括可写层的大小）。
+bash
+
+Copy code
+docker ps -s
+这会给出类似以下的输出：
+
+Copy code
+CONTAINER ID IMAGE COMMAND CREATED STATUS PORTS NAMES SIZE
+其中 SIZE 列显示了容器的大小。
+查看特定容器的存储细节
+要获取特定容器的存储细节，可以使用 docker inspect 命令，它会显示容器的配置和状态信息，包括其在主机上的存储位置。
+bash
+
+Copy code
+docker inspect [CONTAINER_ID]
+在返回的 JSON 输出中，可以找到有关容器存储的详细信息，具体取决于所使用的存储驱动。您可能需要根据存储驱动的不同，查找不同的字段来获取存储位置的信息。
+注意
+* 直接操作 Docker 的存储文件和目录可能会对 Docker 的运行产生不可预知的影响。除非您非常了解 Docker 的工作原理，否则不建议直接修改这些文件。
+* 容器大小的显示可能包括基础镜像的大小，因为容器是基于这些镜像创建的。如果您关注的是容器运行时产生的数据大小，主要应关注可写层的大小。
+
+
+从提供的信息中，我们可以观察到几个关键点关于 Docker 容器的存储位置和大小，以及主机的磁盘使用情况：
+* 		容器列表：通过 docker container ps --all 命令，列出了所有容器的状态。这里显示了容器 ID、使用的镜像、启动命令、创建时间、运行状态以及容器名称。这些容器都基于不同的自定义镜像（dhu117/dhu），并且已经运行了几个月到两年不等。
+* 		磁盘使用情况：通过 df -h 命令，展示了主机的磁盘使用情况。主要有几个挂载点值得注意：
+    * /（根目录）：总大小为 99GB，已使用 87GB，剩余 7.8GB，使用率为 92%。Docker 的默认数据目录 /var/lib/docker 位于此分区，因此 Docker 容器和镜像的数据都存储在这个分区上，这可能是导致空间使用率高的原因之一。
+    * /data：总大小为 2.9TB，已使用 401GB，剩余 2.4TB，使用率为 15%。这个分区使用情况相对较低。
+    * /var/lib/docker/overlay2：多个 overlay 文件系统的挂载点都指向了 / 分区，并显示与根分区相同的磁盘使用情况。overlay2 是 Docker 使用的一种存储驱动，用于管理镜像和容器的层。这些 overlay 挂载点对应于正在运行的容器的可写层和镜像层。
+解释
+* 容器存储：Docker 容器的运行数据（包括从宿主机拷贝到容器内的文件）都存储在 /var/lib/docker 下，具体存储在使用的存储驱动（如 overlay2）的相应目录中。容器的修改、文件添加等操作都会增加这部分的存储使用。
+* 高空间使用率：/ 分区的空间使用率已达到 92%，主要由 Docker 数据（包括容器和镜像）占用。随着容器和镜像的增加，如果不进行清理，可能会耗尽可用空间。
+* 清理建议：考虑定期清理不再需要的容器、镜像、悬空镜像（dangling images），以及 Docker 的构建缓存，以释放空间。可以使用 docker system prune 命令进行一般的清理。对于生产环境，应该小心操作，避免删除重要数据。
+行动方案
+* 评估并迁移数据：如果 /var/lib/docker 的使用率过高，考虑将部分容器迁移到 /data 分区，或者调整 Docker 的数据目录到一个空间更大的分区。
+* 定期维护：定期执行 docker system prune，清理未使用的 Docker 对象。同时，也可以考虑清理 /var/lib/docker 下的日志文件等非核心数据。
+总之，容器内的数据确实会占用宿主机的空间，特别是当 Docker 数据目录位于有限空间的分区时，应该定期进行维护和清理。
+
+
+是的，从宿主机拷贝文件到容器中确实会占用容器的存储空间。容器的文件系统是建立在其基础镜像之上的，并且当你向容器内部添加文件时，这些文件存储在容器的可写层，这会增加容器使用的存储空间。
+查看容器的分配空间大小和可用空间
+容器本身并没有像虚拟机那样分配固定大小的存储空间。容器的存储限制通常取决于宿主机的文件系统和 Docker 的配置。要查看容器中可用的空间，你可以在容器内部运行 df 命令，这将显示容器视角下的文件系统空间使用情况，这实际上反映的是宿主机的存储空间和限制。
+bash
+
+Copy code
+docker exec [容器ID或名称] df -h
+这将列出容器内部可见的所有挂载点的磁盘空间使用情况，包括可用空间。
+容器和镜像的存储目录
+Docker 的容器和镜像确实存储在同一目录下，通常是 /var/lib/docker/，但具体的存储位置取决于所使用的存储驱动（例如 overlay2、aufs 等）。镜像的各层存储在 /var/lib/docker/[存储驱动]/ 目录下，而容器的可写层也存储在相似的路径下。容器的变更（包括从宿主机拷贝进来的文件）存储在容器的可写层中。
+管理容器存储空间
+虽然容器没有预先分配的固定存储空间，但 Docker 提供了一些方式来管理容器可以使用的资源，包括存储空间。例如，你可以使用 Docker 的卷（Volumes）和绑定挂载（Bind Mounts）来存储数据，这样可以更灵活地管理数据，包括在容器之间共享数据和持久化数据。
+对于容器的存储空间管理，一个常见的做法是通过限制容器日志文件的大小，防止它们无限制地增长。可以在 Docker 的守护进程配置文件（通常是 /etc/docker/daemon.json）中设置日志驱动的选项，例如限制日志文件的大小和数量。
+结论
+容器的存储空间实际上是由宿主机的文件系统和 Docker 配置决定的，并且容器内部的空间使用情况反映的是宿主机的空间情况。通过合理地管理容器和镜像，以及利用 Docker 的数据管理特性（如卷和绑定挂载），可以有效地控制和优化存储资源的使用。
+
+
+Docker 默认将其数据（包括镜像、容器、卷等）存储在 /var/lib/docker 目录下。这个选择是 Docker 的默认配置，主要基于 Linux 文件系统的标准布局，其中 /var 目录通常用于存储经常变化的数据，如日志文件和缓存。由于 Docker 容器和镜像的数据可能会频繁变化，所以 Docker 选择将其放在 /var/lib 目录下。
+这个目录位于根文件系统 (/) 下，并不是因为 Docker 特意决定要占用根分区的空间，而是因为这是默认配置。如果 / 分区的空间有限，这确实可能导致空间不足的问题。
+如何将 Docker 数据目录移动到 /data
+如果您的系统中有一个较大的 /data 分区，并且希望 Docker 使用该分区来存储其数据，您可以通过修改 Docker 的配置来实现这一点。下面是如何做到这一点的步骤：
+* 		停止 Docker 服务：
+* 		在大多数 Linux 系统上，您可以使用如下命令停止 Docker 服务： bash  Copy code sudo systemctl stop docker   
+* 		移动 Docker 数据目录：
+* 		将 /var/lib/docker 目录移动到 /data/docker（或您希望的任何目录）。使用如下命令： bash  Copy code sudo mv /var/lib/docker /data/docker   
+* 		更新 Docker 配置：
+* 		您需要告诉 Docker 使用新的数据目录。这通常通过修改 Docker 的守护进程配置文件 daemon.json 来实现，该文件通常位于 /etc/docker/ 目录下。 如果 /etc/docker/daemon.json 文件不存在，您可以创建它。添加或更新以下内容： json  Copy code { "data-root": "/data/docker" }   
+* 		重新启动 Docker 服务：
+* 		应用更改并重新启动 Docker 服务： bash  Copy code sudo systemctl start docker   
+通过这些步骤，您可以将 Docker 的数据存储位置从 /var/lib/docker 移动到 /data/docker 或任何您选择的目录，这有助于管理磁盘空间，特别是在根分区空间有限的情况下。
+注意
+* 在移动 Docker 数据目录之前，请确保备份您的数据，以避免数据丢失。
+* 在修改配置并重新启动 Docker 服务之后，您应该验证 Docker 是否正常工作，以及新的数据目录是否按预期使用。
+
+
+
+docker镜像就好比一个模板，我们可以通过这个模板来创建容器服务，tomcat镜像===>run==>tomcat01容器（提供服务器），通过这个镜像可以创建多个容器（最终服务运行或者项目运行就是在容器中的）。
+
+
+
+
+========================================================
+
+Linux指令总结
+
+Conda 环境
+安装虚拟环境到指定路径的命令如下：
+conda create --prefix=D:\python36\py36 python=3.6
+conda create —prefix /data/david/anaconda3/envs/tags_classification python=3.9
+
+激活conda环境
+conda init
+source activate /data/david/anaconda3/envs/tags_classification
+
+
+
+activate D:\python36\py36
+
+deactivate
+
+conda remove --prefix=D:\python36\py36 --all.  删除依赖
+
+conda env remove -n caffe  删除环境
+
+Use pwdx to see the file path
+
+
+如果是多卡训练，请对应修改 sh 中的：CUDA_VISIBLE_DEVICES=0 torchrun --nproc_per_node 1。例如 4 卡训练可以改为：CUDA_VISIBLE_DEVICES=0,1,2,3 torchrun --nproc_per_node 4
+
+
+
+# tmux ls
+keepMe: 1 windows (created Wed Jun 24 14:20:15 2015) [171x41]
+otherSession: 1 windows (created Wed Jun 24 14:22:01 2015) [171x41]
+3: 1 windows (created Wed Jun 24 14:23:28 2015) [171x41]
+
+(assuming here that you're on keepMe session)
+# tmux kill-session -t otherSession
+-or-
+# tmux kill-session -t 3
+
+
+conda create --name base --clone my_env
+
+# 对外开放的域名和端口
+voucheraigc.yichemall.com
+
+服务器开放端口号是 19001,19002,19003
+
+
+select * from ycrc_rc_eng.dwd_app_reco_tagm_new_tag_content_a limit 20
+
+where dt>='2023-12-20' and id=1000477;
+(根据分区查询表数据)
+
+
+show partitions ycrc_rc_eng.dwd_app_reco_tagm_new_tag_content_a
+(查看表的分区)
+
+
+
+select * from ycrc_rc_eng.dws_all_reco_pool_a where itemid='86939713' and pt >='2023-12-20'
+
+查物料id对应的信息
+
+TF-IDF算法，进行打标
+
+
+Rz -be 可以上传中断的问题
+
+ssh -p 51870 root@connect.westb.seetacloud.com
+
+IpBY9elZKcAN
+
+
+
+Openai:
+
+unmxe388@amdyes.asia
+Vwjqfk574198
+
+
+
+
+赵洪江  6228 4800 1077 1615 415 农业银行   房租
+
+
+92460000MADC2UJ3XC
+
+
+华纳云
+154.19.84.129
+Vn5Zp8Jn1Bv9
+
+
+数据库账号资料
+数据库名：www_gptzhiyu_com
+用户：www_gptzhiyu_com
+密码：XZ2iycYARMJWn5HS
+
+
+======================================
+Llama 微调总结
+
+Llama finetune
+
+在 Alpaca-LoRA 项目中，作者提到，为了廉价高效地进行微调，他们使用了 Hugging Face 的 PEFT。PEFT 是一个库（LoRA 是其支持的技术之一，除此之外还有Prefix Tuning、P-Tuning、Prompt Tuning），可以让你使用各种基于 Transformer 结构的语言模型进行高效微调。下面安装PEFT
+
+参考 https://juejin.cn/post/7218090232189452345
+
+Alpaca-LoRA 是基于Stanford Alpaca dataset 基于Llama 模型进行Lora微调的模型 (基于数据集alpaca_data_cleaned.json)
+
+https://github.com/Instruction-Tuning-with-GPT-4/GPT-4-LLM    (Instruction Tuning with GPT-4 使用gpt4来进行微调)
+
+Stanford Alpaca是基于数据集进行全量的微调，也就是对Llama的所有参数层都要改变，而Lora是在不改变原始模型的参数，通过嫁接多个外层只改变外接的参数层实现
+
+https://github.com/LC1332/Chinese-alpaca-lora   这是使用上面的Lora方案+中文语料
+https://github.com/LianjiaTech/BELLE  这是基于BELLE模型进行的中文数据集微调方案
+
+1，指令微调方法，要么是全量的，要么是基于Lora
+2，code llama提供了三种模型，每种模型包含7B,13B,34B三个尺寸，支持多种编程语言，如Python, C++, Java, PHP, Typescript (Javascript), C#, Bash等。
+￼
+
+
+3,
+(1) Vicuna是在LLaMa-13B的基础上使用监督数据微调得到的模型，数据集来自于ShareGPT.com 产生的用户对话数据，共70K条
+(2) Alpaca是斯坦福在LLaMa-7B的基础上监督微调出来的模型，斯坦福是用OpenAI的Text-davinci-003 API配合self-instruct技术，使用175个提示语种子自动生成了52K条提示-回复的指示数据集，在LLaMa-7B上微调得到的模型，在8张80G的A100上训练了3小时。
+
+4.
+(1) 使用的大模型：https://huggingface.co/decapoda-research/llama-7b-hf，已经是float16的模型。
+(2)微调数据集：https://github.com/LC1332/Chinese-alpaca-lora/blob/main/data/trans_chinese_alpaca_data.json
+(3)微调的代码已上传到github：https://github.com/jiangxinyang227/LLM-tuning/tree/master/llama_tuning
+
+(4) 对模型本身全部或者部分参数进行调整也有其独特优势，常见的方法如：
+1.冻结预训练的模型主干，只微调任务层，比如分类器部分；
+2.冻结预训练的模型主干，增加一个全连接层，微调新增部分；
+3.微调模型所有层。
+
+(5) 对FaceBook/LLaMA的微调一般有两种方案，一种是斯坦福的alpaca系列，一种是基于shareGPT语料的Vicuna方向。Vicuna采用的是多轮对话的语料，训练效果要好于默认为单轮对话的alpaca，所以要在Llama基础上微调，建议首选Vicuna的方式。
+
+(6) 对于LLM来说，模型的能力很大程度上来自于预训练过程，无论是RLHF还是fine-tuning，很大程度上是在做alignment
+
+(7)全模型微调：不固定模型参数，基于SFT数据训练较少的epoch。全模型微调时，要特别注意可能出现灾难性遗忘(模型在多任务上效果下降)。训练数据的多样性(混合多个任务的SFT数据、包含原始预训练数据)非常重要。全模型微调本质上还是重复Pre-Train的过程，因此可以注入新的知识到模型中。(是的全量微调相当于预训练过程，因为整个参数都要发生变化，这和BERT+finetuning的模型不同，因为预训练的参数不会发生变化，变化的只是下游分类器的参数)
+
+(8) 固定部分参数形式：增加一些旁路模块，微调时只更新这些旁路模块的参数，不更新整个模型，极大的减少所需要的显存。典型的adapter、Lora等微调方式，通过固定基础模型参数只训练额外参数等形式，有效避免了灾难性遗忘, 但效果可能不如全模型微调(未证实)  (那么这个也就是相当于预训练+finetuning的方式了，也就是预训练模型参数固定)
+
+
+(9) 同样是对Llama进行微调，分为两种，一种是无标注语料，这种模型并不具备聊天的功能，因为聊天需要专门的指令数据来引导模型
+
+对比项	中文LLaMA-2	中文Alpaca-2
+模型类型	基座模型	指令/Chat模型（类ChatGPT）
+已开源大小	1.3B、7B、13B	1.3B、7B、13B
+训练类型	Causal-LM (CLM)	指令精调
+训练方式	7B、13B：LoRA + 全量emb/lm-head
+1.3B：全量	7B、13B：LoRA + 全量emb/lm-head
+1.3B：全量
+基于什么模型训练	原版Llama-2（非chat版）	中文LLaMA-2
+训练语料	无标注通用语料（120G纯文本）	有标注指令数据（500万条）
+词表大小[1]	55,296	55,296
+上下文长度[2]	标准版：4K（12K-18K）
+长上下文版（PI）：16K（24K-32K）
+长上下文版（YaRN）：64K	标准版：4K（12K-18K）
+长上下文版（PI）：16K（24K-32K）
+长上下文版（YaRN）：64K
+输入模板	不需要	需要套用特定模板[3]，类似Llama-2-Chat
+适用场景	文本续写：给定上文，让模型生成下文	指令理解：问答、写作、聊天、交互等
+不适用场景	指令理解 、多轮聊天等	文本无限制自由生成
+偏好对齐	无	RLHF版本（1.3B、7B）
+
+通过上面可以知道，中文Llama-2适用于生成下文，因为预训练的时候就是采用这种方式
+
+（1）无标注通用语料主要用于训练语言模型的基本语言理解能力，如语法、词汇和基本的文本结构。
+（2）有标注指令数据是指包含特定标注或指令的文本数据。这种数据通常是为了特定的任务或应用而收集和准备的，如问答、文本分类、情感分析等。有标注指令数据用于训练模型对特定任务的理解和执行能力，如根据指令生成回答、完成特定的文本转换等。
+
+预训练
+* 在原版Llama-2的基础上，利用大规模无标注数据进行增量训练，得到Chinese-LLaMA-2系列基座模型
+* 训练数据采用了一期项目中Plus版本模型一致的数据，其总量约120G纯文本文件
+* 训练代码参考了🤗transformers中的run_clm.py，使用方法见📖预训练脚本Wiki
+
+指令精调
+* 在Chinese-LLaMA-2的基础上，利用有标注指令数据进行进一步精调，得到Chinese-Alpaca-2系列模型
+* 训练数据采用了一期项目中Pro版本模型使用的指令数据，其总量约500万条指令数据（相比一期略增加）
+* 训练代码参考了Stanford Alpaca项目中数据集处理的相关部分，使用方法见📖指令精调脚本Wiki
+
+RLHF精调
+* 在Chinese-Alpaca-2系列模型基础上，利用偏好数据和PPO算法进行人类偏好对齐精调，得到Chinese-Alpaca-2-RLHF系列模型
+* 训练数据基于多个开源项目中的人类偏好数据和本项目指令精调数据进行采样，奖励模型阶段、强化学习阶段分别约69.5K、25.6K条样本
+* 训练代码基于DeepSpeed-Chat开发，具体流程见📖奖励模型Wiki和📖强化学习Wiki
+
+
+￼
+
+
+
+SFT微调, 参考 https://juejin.cn/post/7270867067216199719?from=search-suggest
+1，下载预训练模型 Chinese-Llama-2-7b
+2，下载SFT微调框架 LLaMA-Efficient-Tuning
+
+初始阶段的损失值高低，较高的初始损失值可能表明模型初始化不合适，需要调整初始化方法。
+损失值下降的速率，较快的下降速率可能表明模型对数据的学习能力较强，但也可能存在过拟合的风险。
+损失值的稳定性，稳定的损失值说明模型已经收敛，训练效果较好。如果损失值在一定范围内波动，可以考虑增加训练轮次或使用正则化等方法进一步优化模型。
+训练过程中的异常情况，如损失值突然上升或跳跃，可能表明出现了问题，需要检查模型或数据是否存在异常
+
+
+￼
+
+
+通常来说，模型会从预训练数据集中吸收知识，而指令微调通常更多地是帮助或引导LLM遵循指令。
+
+在进行Sparse Fine-Tuning (SFT) 时，确实需要特定的方法来控制只更新模型的部分参数。对于BERT和GPT这类模型，微调通常涉及以下几个步骤或策略：
+* 		微调下游任务模型:
+    * 对于BERT：通常在预训练模型的基础上添加一个或多个下游任务特定的层（例如分类器），然后只对这些新添加的层进行训练。BERT本身的预训练层参数可以保持不变，或者进行少量的微调。
+    * 对于GPT或类似模型：同样，可以添加特定的下游任务层，并进行微调。但与BERT不同的是，GPT类模型常常在微调过程中对整个模型的所有参数进行更新，尽管这不是必须的。
+* 		控制特定参数的更新:
+    * 在实现SFT时，可以通过编程的方式来决定哪些参数应该被更新。这通常涉及到修改模型的优化器设置，以便只对选定的参数子集应用梯度更新。
+    * 例如，在PyTorch中，可以创建一个只包含希望更新的参数的列表，并将这个列表传递给优化器。这样，优化器只会更新这些选定的参数，而不会更新模型中的其他参数。
+* 		层级微调:
+    * 可以选择性地微调模型的特定层。例如，在BERT或GPT中，可以决定只微调最后几层，而保持其他层不变。
+    * 这种方法需要对模型的结构有深入的了解，以便有效地选择哪些层或哪些特定类型的层（如注意力层、前馈层）进行更新。
+* 		正则化方法:
+    * 使用正则化技术（如L1或L2正则化）来控制参数的更新。这可以帮助确保只有对最终性能影响最大的参数进行更新。
+
+
+为什么要进行指令微调？
+* 因为原始的预训练LLAMA模型是一个大语言模型（废话~），会根据前面的单词预测下一个词语，如果你问它问题，它不会正确回答你，你问它一个问题，它可能会续写一些跟你一样的句子，例如， 
+* Prompt为 “What is the capital of China?”，它的回复如下所示： 
+￼
+
+https://github.com/ymcui/Chinese-LLaMA-Alpaca-2?tab=readme-ov-file  下载模型
+
+对于平衡的数据，我们一般都用准确率（accuracy），也就是（1-误分率）作为一般的评估标准。这种标准的默认假设前提是：“数据是平衡的，正例与反例的重要性一样，二分类器的阈值是0.5。”在这种情况下，用准确率来对分类器进行评估是合理的
+
+
+在文本分类中，我们使用的交叉熵为tf.nn.softmax_cross_entropy_with_logits；在多标签文本分类中，我们使用的交叉熵则为tf.nn.sigmoid_cross_entropy_with_logits。这样做的原因：
+* tf.nn.sigmoid_cross_entropy_with_logits测量离散分类任务中的概率误差，其中每个类是独立的而不是互斥的。这适用于多标签分类问题。
+* tf.nn.softmax_cross_entropy_with_logits测量离散分类任务中的概率误差，其中类之间是互斥的（每个条目恰好在一个类中）。这适用多分类问题。
+
+
+一般的多元分类是通过tf.argmax(logits)实现，返回的是最大的那个数值所在的label_id，因为logits对应每一个label_id都有一个概率。但是，在多标签分类中，我们需要得到的是每一个标签是否可以作为输出标签，所以每一个标签可以作为输出标签的概率都会量化为一个0到1之间的值。所以当某一个标签对应输出概率小于0.5时，我们认为它不能作为当前句子的输出标签；反之，如果大于等于0.5，那么它代表了当前句子的输出标签之一
+
+
+￼
+
+这个上面其中keneral数量，比如700个，相当于kerneal提取的特征不一样，然后就是window size，比如6,7,8只是窗口大小
+
+￼
+
+
+中间的部分就是经过kernal size + window size 之后形成的，上面就是max pooling 的操作，最后把max pooling 当做输入，经过fc层，也就是fc的输入
+
+是的，您的理解是正确的。全连接层（FC层）是深度学习中的一种层，其中每个神经元都与前一层的所有神经元相连接。这意味着每个神经元都会接收到前一层所有神经元的输出作为输入。每个神经元在接收输入后，会通过一个加权和的计算，再加上一个偏置项（bias），最后通常会应用一个激活函数来决定该神经元的输出。激活函数的目的是引入非线性，使得整个网络能够学习和模拟复杂的函数。
+假设您提到的模型中，全连接层有1000个神经元，而前一层有10000个神经元。这意味着每个全连接层的神经元将有10000个输入，每个输入都有自己的权重，再加上一个偏置项。这可以表示为以下的计算公式：
+激活函数是深度学习中非常关键的一个概念，它决定了一个神经元是否应该被激活，即输出的值是多少。常见的激活函数包括ReLU（Rectified Linear Unit）、sigmoid、tanh等。每种激活函数都有其特定的用途和特点
+
+
+当你想要输出10个类别的概率分布，并且当前有1000个神经元时，你确实需要添加一个全连接层（FC层），使其输出为10个神经元，对应于10个类别。这个新的全连接层将会将前面层（假设是1000个神经元的输出）的信息整合，输出10个值，每个值对应一个类别的得分（也就是logits）。然后，这些logits会被送入softmax函数，而不是直接应用激活函数来控制值在-1到1之间。
+* 		从1000个神经元到10个神经元的全连接层: 这个全连接层的作用是将1000个特征映射到10个特征上，其中每个特征代表一个类别的“得分”。这一步并不涉及将输出值限制在某个范围内，而是简单地通过权重和偏置来线性变换输入特征。
+* 		应用Softmax函数: 接下来，将这10个神经元的输出（即每个类别的得分或logits）输入到softmax函数中。softmax函数会将这些得分转换成概率分布，确保所有类别的概率之和为1
+
+* 对于中间层，通常会选择如ReLU等激活函数，来引入非线性，使模型能够学习复杂的数据表示。
+* 对于最后的输出层，当进行多分类任务时，通常使用softmax函数来输出概率分布。这与直接将输出限制在-1到1之间（例如使用tanh函数）是不同的。softmax是为了将输出解释为概率，而不仅仅是限制输出范围。
+
+tanh通常被用作隐藏层的激活函数，因为它的输出是零中心化的，这意味着数据的平均输出接近0，从而有助于加速学习过程，并且减少梯度消失问题的影响，尤其是在网络较浅的时候。零中心化的特性使得下一层的输入也接近零中心，这有助于梯度下降算法更高效地工作，但在实践中，尤其是在深度网络中，ReLU及其变体（如Leaky ReLU、ELU等）因其计算简单和在避免梯度消失问题方面的效果更佳，而成为更流行的选择。然而，在特定场景和网络结构中，tanh仍然是一个有价值的选项。
+
+Stanford Alpaca  是全量微调llama的产物
+
+
+魔搭默认的模型下载地址是/data/cache/modelscope/hub/
+/home/app/.cache/modelscope/hub/
+每次都要使用 export USE_MODELSCOPE_HUB=1
+
+
+这个表格展示了不同的训练方法在几个训练阶段上的适用性。每个方法都有它们特定的适用场景和优势。下面是对各个方法和训练阶段的简要解释：
+训练方法
+* 全参数训练：指的是在训练过程中更新模型中的所有参数。这是最传统的训练方式，适用于从头开始训练模型或对预训练模型进行微调。
+* 部分参数训练：只更新模型中的部分参数，而其他参数保持不变。这种方法可以减少计算资源的需求，加速训练过程，常用于微调预训练模型。
+* LoRA（Low-Rank Adaptation）：一种参数高效的微调技术，通过引入低秩矩阵来调整预训练模型的权重。这种方法可以在保持预训练模型大部分参数不变的情况下，实现模型的有效适应。
+* QLoRA：是对LoRA的一种量化版本，它在LoRA的基础上应用了量化技术，进一步减少了模型的参数量和计算资源的需求，同时尝试保持模型性能。
+训练阶段
+* 预训练：在大规模数据集上训练模型，以学习通用的语言表示。所有列出的方法都支持在此阶段使用。
+* 指令监督微调：在特定任务的数据集上对预训练模型进行微调，以适应特定的任务或场景。这个阶段同样适用于所有方法。
+* 奖励模型训练：训练一个奖励模型来评估生成文本的质量或者行为的优劣，通常用于强化学习环境中。所有方法均可在此阶段应用。
+* PPO训练（Proximal Policy Optimization）：一种强化学习算法，用于优化策略输出以最大化奖励。所有方法都能用于支持PPO训练。
+* DPO训练（不常见，假设是一种基于强化学习的优化策略，名字可能是虚构的）：类似于PPO，也是一种强化学习训练方法。表格显示所有方法都适用于此训练阶段。
+这个表格展示了这些训练方法在不同训练阶段的普遍适用性，强调了它们的灵活性和广泛的应用场景。
+
+* 预训练阶段：通常不针对特定任务进行优化，而是学习语言的通用表示。预训练的数据集通常由大量未标记的自然语言文本组成，不需要像SFT（Supervised Fine-Tuning）那样构造具体的指令或任务标签。
+* 指令驱动训练阶段（SFT等）：在预训练的基础上，针对具体的任务或应用进行微调。这一阶段会利用较小的、特定任务的标注数据集，通过构造任务相关的指令或示例来优化模型在特定任务上的表现。
+预训练模型的能力
+* 广泛的知识理解和生成能力：由于预训练覆盖了大量的主题和领域，模型能够理解和生成涉及广泛知识点的文本。
+* 强大的语言推理能力：模型能够在给定上下文的基础上进行逻辑推理和回答问题。
+* 自然语言理解和生成：模型具备处理、理解和生成自然语言的能力，可以应用于机器翻译、文本摘要、对话系统等多种场景。
+*
+
+预训练过程中存在全参数训练、部分参数训练、LoRA（Low-Rank Adaptation）、和QLoRA等不同的训练方式，主要是为了满足不同的模型优化需求和实现效率与性能之间的平衡。下面是这些方法在预训练阶段使用的原因：
+全参数训练
+* 目的：在预训练阶段，全参数训练意味着更新模型中的所有参数。这种方法可以最大化模型学习到的信息量，从而让模型掌握尽可能多的通用知识和语言理解能力。
+* 适用场景：适用于构建基础模型，尤其是当有足够的计算资源和大规模未标注数据集时。
+部分参数训练
+* 目的：部分参数训练指的是在预训练过程中只更新模型的一部分参数，这样做可以减少计算资源的需求，加快训练速度。
+* 适用场景：当模型的规模非常大，或者计算资源有限时，部分参数训练成为一种有效的策略。
+LoRA
+* 目的：LoRA（Low-Rank Adaptation）是一种参数高效的适应技术，它通过在预训练模型的基础上添加低秩矩阵来进行调整，从而在不显著增加参数数量的情况下提高模型的适应性。
+* 适用场景：在想要保持预训练模型参数大部分不变，同时又希望模型能够适应新的数据或任务时使用。
+QLoRA
+* 目的：QLoRA是在LoRA基础上进一步发展的一种技术，通过对参数进行量化，进一步减少了模型的参数量和计算资源需求，同时尽可能保持模型的性能。
+* 适用场景：当需要极致压缩模型大小，或者在边缘设备上部署模型时非常有用。
+总结
+预训练阶段使用这些不同的训练方法，主要是为了在不同的资源、性能和效率需求之间找到最佳平衡。全参数训练提供了最广泛的知识学习能力，而部分参数训练、LoRA和QLoRA则提供了更高的训练效率和模型适应性。这些方法的选择取决于具体的训练目标、资源限制和模型部署需求。
+
+
+奖励模型训练（通常标记为 --stage rm）是在强化学习（RL）或类似方法中使用的一个步骤，目的是训练一个模型来预测某个动作或一系列动作的奖励值。这个奖励值通常代表了采取特定动作后环境状态的好坏，是强化学习算法中用于指导策略更新的关键信号。
+奖励模型训练的目的：
+* 评估动作：提供一个机制来评价给定动作或动作序列的期望效果，帮助模型了解哪些动作是有益的，哪些可能是有害的。
+* 指导学习：在没有明确标签的情况下，通过奖励模型的预测来指导模型学习，从而在复杂的任务中找到有效的策略。
+使用 SFT 检查点的原因：
+在训练奖励模型时，使用 --adapter_name_or_path path_to_sft_checkpoint 和 --create_new_adapter 参数的原因如下：
+* 利用已有知识：SFT（Supervised Fine-Tuning）检查点包含了通过监督学习得到的先验知识。在奖励模型训练前引入这些知识，可以帮助模型更快地适应任务，尤其是当任务与SFT训练任务相关时。
+* 创建新的适配器：--create_new_adapter 参数指示训练过程中创建一个新的适配器层。适配器是一种有效的模型微调技术，它允许在保留预训练模型参数不变的情况下，通过添加少量额外参数来适应新任务。使用适配器可以减少需要训练的参数量，同时保持或甚至提高模型在特定任务上的性能。
+适配器的优点：
+* 参数效率：通过训练少量的额外参数，适配器可以显著减少微调过程中的计算资源需求。
+* 灵活性：适配器允许模型快速适应新任务而不影响原有的预训练参数，这使得同一个模型可以同时适应多个任务而不产生冲突。
+* 任务特定的微调：适配器提供了一种有效的方式，使模型能够学习到任务特定的知识，这对于奖励模型训练尤其重要，因为奖励通常是高度依赖任务的。
+总之，在训练奖励模型时使用SFT检查点和创建新的适配器，是一种利用已有知识、提高训练效率和模型性能的策略。这种方法特别适用于资源有限或需要模型在多任务上表现良好的场景。
+
+
+是的，BERT、GPT、Word2Vec、和GloVe等模型都是用于生成文本数据的嵌入表示，但它们在训练方法和模型架构上有所不同。每种方法都试图以不同的方式捕捉单词、短语或句子在语言上的含义，以及它们之间的关系。下面是一个简要的概述：
+Word2Vec
+* 训练方式：Word2Vec是一种浅层的神经网络模型，通常有两种训练方式：Skip-Gram和CBOW（Continuous Bag of Words）。Skip-Gram模型通过当前词来预测上下文环境中的词，而CBOW模型则尝试通过上下文的词来预测当前词。
+* 目标：Word2Vec的目标是将词转换为向量，这些向量能够在向量空间中捕捉词之间的语义和语法关系。
+GloVe
+* 训练方式：GloVe（Global Vectors for Word Representation）也是用于生成词嵌入的模型，但它结合了矩阵分解和局部上下文窗口的优点。GloVe在全局词频统计（co-occurrence statistics）的基础上进行训练，旨在使共现频率高的词之间的向量更接近。
+* 目标：GloVe试图在单词的共现统计和它们的向量表示之间建立直接的关系，从而捕获词与词之间的关系。
+BERT
+* 训练方式：BERT（Bidirectional Encoder Representations from Transformers）使用了Transformer的编码器架构，并通过Masked Language Model（MLM）和Next Sentence Prediction（NSP）两种方式进行预训练。MLM的训练过程中，随机地将一些单词替换为特殊的[MASK]标记，模型需要预测这些被遮蔽的单词。
+* 目标：BERT的目标是生成深层的双向表示，可以捕捉上下文中的复杂关系，并适用于广泛的下游NLP任务。
+GPT
+* 训练方式：GPT（Generative Pre-trained Transformer）使用了Transformer的解码器架构，并采用自回归（Autoregressive）的方式进行训练，即模型在给定之前的词的条件下预测下一个词。
+* 目标：GPT的目标是通过大规模的无监督预训练，捕捉语言的深层次结构，然后通过微调的方式适应各种特定的NLP任务。
+每种模型都有其独特的优势和用途，选择哪种模型取决于特定的应用场景和需求。例如，BERT和GPT在理解上下文和生成自然语言文本方面表现出色，而Word2Vec和GloVe在生成稳定且高质量的词嵌入方面非常有效。
+
+炼丹四步：
+1. 使用公开数据预训练（自监督学习），得到 LLaMA2；
+2. 对 LLaMA2 进行监督微调（SFT），得到一个初始版本的 LLaMA2-Chat；
+3. 人对 LLaMA2-Chat 回答进行反馈和标注，得到两个奖励模型（分别针对有用性和安全性）；
+4. 通过 基于人类反馈的强化学习（RLHF）/ rejection sampling / PPO，对 LLaMA2-Chat 进行（多次）迭代。
+
+我想让模型学习某个领域或行业的知识，是应该预训练还是应该微调？
+答：可以使用预训练和微调相结合的方式，先用篇章数据进行预训练以获取广泛的知识，再用问答对数据进行微调，使模型更好的学习到特定领域的知识。
+当然，GPT大模型的预训练和微调，从实现方式来讲是没有什么差别的，都是decoder only的语言模型训练并更新参数，如果样本集小，没有大量的篇章文档数据，我认为只进行微调也能注入知识的，不必太纠结预训练。而且特定领域跟预训练模型的分布差别不大，也不用二次预训练。
+
+
+本文开发了Llama 2，一个经过预训练和微调（有监督的微调以及用人类反馈强化学习）得到的大规模模型族。其中预训练模型Llama 2以及微调后的版本Llama 2-chat都开源了7B，13B以及70B规模的版本。在有用性和安全性基准集上经过测试，Llama 2-chat不仅比现有的开源模型表现得更好，并且与一些闭源模型表现相当。训练方法总览如下图。首先在公开语料上经过预训练得到预训练模型Llama 2。然后，在人工标注的指令跟随数据上对Llama2进行有监督的微调得到SFT模型。接下来，收集人类偏好数据训练打分模型（RM），以SFT为初试策略，基于RM对策略打分，通过迭代的拒绝抽样和近端策略优化(PPO)对SFT进行优化，得到强化版本的模型Llama 2-chat。
+￼
+
+
+
+
+CUDA_VISIBLE_DEVICES=0 python src/train_bash.py \
+    --stage sft \
+    --do_train \
+    --model_name_or_path /root/LLaMA-Factory-main/chatglm3\
+    --dataset alpaca_gpt4_zh \
+
+微调可以用本地的模型，当然第一次下载模型需要用远程的放在本地的cache目录
+
+
+百川的微调脚本:
+CUDA_VISIBLE_DEVICES=0 python src/train_sft.py \
+    --model_name_or_path baichuan-7B模型文件夹路径或huggingface地址 \
+    --do_train \
+    --dataset alpaca_gpt4_zh \
+    --finetuning_type lora \
+    --lora_rank 8 \
+    --lora_target W_pack \
+    --output_dir alpaca_baichuan \
+    --per_device_train_batch_size 4 \
+    --per_device_eval_batch_size 4 \
+    --gradient_accumulation_steps 8 \
+    --lr_scheduler_type cosine \
+    --logging_steps 10 \
+    --save_steps 100 \
+    --eval_steps 100 \
+    --learning_rate 5e-5 \
+    --max_grad_norm 0.5 \
+    --num_train_epochs 3.0 \
+    --dev_ratio 0.01 \
+    --evaluation_strategy steps \
+    --load_best_model_at_end \
+    --plot_loss \
+    --fp16
+
+
+
+deepspeed --include="localhost:4,5,6,7" --master_port 29510 ./src/train_bash.py
+--stage pt
+--model_name_or_path path
+--do_train
+--do_eval
+--val_size 0.01
+--dataset dataset
+--finetuning_type freeze
+--num_layer_trainable 3
+--name_module_trainable mlp, self_attn
+--lora_target None
+--output_dir output_dir
+--overwrite_cache
+--per_device_train_batch_size 4
+--per_device_eval_batch_size 4
+--gradient_accumulation_steps 4
+--lr_scheduler_type linear
+--logging_steps 1
+--learning_rate 1e-5
+--num_train_epochs 10.0
+--plot_loss
+--deepspeed ./ds_config.json
+--bf16
+--template baichuan2
+--seed 42
+--evaluation_strategy steps
+
+
+参考https://github.com/hiyouga/LLaMA-Factory/issues/2323
+
+要在指令监督微调（Supervised Fine-Tuning, SFT）阶段使用自己预训练的LoRA参数进行微调，您需要确保几个关键步骤和参数设置正确。基于您提供的命令和LoraArguments类的定义，以下是完成这个任务的步骤：
+* 		预训练LoRA参数：首先，您需要确保已经通过LoRA方法对模型进行了预训练，并且保存了预训练模型的参数。这一步通常涉及到修改模型的特定层或模块，以引入LoRA参数，并通过训练过程更新这些参数。
+* 		保存LoRA模型：在预训练完成后，确保将包含LoRA参数的模型保存到了指定的路径。这包括模型权重和任何相关配置文件。
+* 		指定预训练模型路径：在进行SFT时，您需要通过--model_name_or_path参数指定含有预训练LoRA参数的模型路径。这样做可以确保微调过程从预训练的LoRA参数开始，而不是从头开始。
+* 		使用--create_new_adapter参数（如果需要）：根据您的问题，如果想要在SFT阶段创建一个带有随机初始化权重的新适配器，可以在命令中添加--create_new_adapter标志。这会使得create_new_adapter在LoraArguments中被设置为True。但是，如果您的目标是使用预训练的LoRA参数，而不是创建新的随机适配器，那么您可能不需要这个参数。
+结合您的需求，如果您想要使用预训练的LoRA参数进行SFT，而不是创建新的适配器，您的命令应该看起来像这样：
+bash
+
+Copy code
+CUDA_VISIBLE_DEVICES=0 python src/train_bash.py \ --stage sft \ --do_train \ --model_name_or_path path_to_pretrained_lora_model \ # 这里指定包含预训练LoRA参数的模型路径 --dataset alpaca_gpt4_zh \ --template default \ --finetuning_type lora \ --lora_target q_proj,v_proj \ --output_dir path_to_sft_checkpoint \ --overwrite_cache \ --per_device_train_batch_size 4 \ --gradient_accumulation_steps 4 \ --lr_scheduler_type cosine \ --logging_steps 10 \ --save_steps 1000 \ --learning_rate 5e-5 \ --num_train_epochs 3.0 \ --plot_loss \ --fp16
+请确保path_to_pretrained_lora_model指向的是您预训练LoRA模型的确切路径。这样，微调过程就会从预训练的LoRA参数开始，而不是完全从头开始训练。
+
+
+
+
+在你提供的命令中，pretrain（预训练）和SFT（Sparse Fine-Tuning，稀疏微调）阶段没有使用--create_new_adapter参数，而在奖励模型（Reward Model）训练阶段则使用了。这个设计选择反映了不同阶段的训练目标和方法的差异。让我们来详细探讨一下：
+Pretrain 和 SFT 不使用 --create_new_adapter 的原因：
+* 		预训练（Pretrain）阶段：预训练通常在非常大的数据集上进行，目的是学习广泛的语言表示，而不是特定任务的知识。在这个阶段，模型通常不使用适配器（Adapters）或特定的微调技术，因为目标是学习通用的表示。
+* 		稀疏微调（SFT）阶段：SFT是在预训练模型的基础上进行的，目的是针对特定任务调整模型的参数。虽然SFT涉及对模型的细微调整，但这种调整通常是直接作用于模型本身的参数，而不是添加新的适配器层。SFT通过调整少量参数来实现快速有效的任务适应，同时保持大部分预训练参数不变。
+奖励模型训练使用 --create_new_adapter 的原因：
+* 		奖励模型训练阶段：这个阶段的目的可能是进一步细化模型对特定任务的适应性，或者训练模型以在特定任务上产生特定类型的输出。使用--create_new_adapter参数创建新的适配器层，可以在不干扰原始模型参数的情况下，为模型添加额外的任务特定能力。适配器层提供了一种高效的方式来增加模型的灵活性和适应性，使得在不同任务之间切换变得更加容易，同时减少了对额外训练数据的需求。
+总结：
+* 在预训练和SFT阶段，重点是学习通用的语言表示和针对特定任务进行精细的调整，通常不需要通过添加新的适配器层来实现。
+* 在奖励模型训练阶段，可能需要对模型进行更特定的调整或增加新的任务特定能力，此时使用--create_new_adapter来创建新的适配器层是有益的，因为它允许模型保持对之前任务的知识，同时学习新任务的特定要求。
+这种方法体现了在不同训练阶段根据任务需求采取不同策略的灵活性
+
+
+
+在你提供的这个命令中，虽然是在执行稀疏微调（SFT）阶段，但使用了--adapter_name_or_path参数来指定一个适配器或预训练模型的路径。这可能看起来与之前的解释有所冲突，但实际上，它反映了在实际应用中对训练策略的灵活运用。这里的关键在于理解--adapter_name_or_path参数的作用以及适配器在SFT中的潜在用途。
+--adapter_name_or_path 参数的作用
+* 指定预训练模型或适配器的路径：这个参数允许你指定一个已经存在的适配器或者预训练模型的路径。在SFT或其他微调任务中引用这个参数，可以是为了加载特定的预训练参数或适配器配置，作为微调的起点。
+在SFT中使用适配器的可能原因
+* 利用预训练适配器：如果在之前的训练阶段（如预训练或其他微调任务）中已经创建并训练了适配器，那么在后续的SFT任务中引用这个适配器可能是为了继续利用这些已经适应特定任务或数据的参数。这种方式可以帮助模型在特定任务上获得更好的性能，尤其是当这些任务与之前训练的适配器高度相关时。
+* 维持参数的灵活性和模块化：通过使用适配器，微调过程可以保持模型的其他部分不变，仅对适配器部分进行调整。这样做增加了模型的灵活性和模块化，使得对不同任务的适应更加高效和可控。
+* 避免对原始预训练模型的直接修改：在某些情况下，可能希望避免对原始预训练模型的权重进行直接修改。使用适配器可以在不影响原始模型参数的前提下进行任务特定的调整。
+总结
+虽然通常在SFT阶段不创建新的适配器，使用--adapter_name_or_path来引用已有的适配器或预训练模型路径是一种灵活应用预训练资源的策略。这表明在实际应用中，根据具体任务的需求和已有资源的可用性，可以灵活选择使用适配器的策略。这种方法提供了一种在保持模型灵活性和效率的同时，优化特定任务性能的途径。
+
+
+在这个命令中，--create_new_adapter参数的使用表明，在稀疏微调（SFT）阶段，除了加载特定的预训练模型或适配器之外，还要创建一个新的适配器。这种做法在某些情况下是有其特定原因和优势的：
+为什么在SFT阶段使用--create_new_adapter
+* 		模型层次的灵活性：通过在SFT阶段创建新的适配器，可以在保持预训练模型参数不变的同时，为特定任务引入新的可训练参数层。这样做增加了模型的灵活性，允许在不同任务之间切换而无需重新训练整个模型。
+* 		任务特定适应性：新的适配器可以针对当前的SFT任务进行优化，使模型更好地适应这一特定任务的需求。这对于提高模型在特定任务上的表现非常有帮助，尤其是当任务与原始预训练时的数据或目标有显著差异时。
+* 		避免干扰原始预训练权重：在微调过程中创建新的适配器层，可以避免对原始预训练模型的权重造成干扰，这对于保持模型的泛化能力是有益的。同时，这也使得原始模型可以在不同的微调任务之间被重复利用，而不会因为某一特定任务的微调而损失在其他任务上的表现。
+* 		实验和模型迭代：在进行模型的实验和迭代开发时，--create_new_adapter提供了一种方便的方式来测试不同配置的影响，而无需从头开始重新训练模型。这可以显著加快实验周期，提高研究和开发的效率。
+总结
+在SFT阶段使用--create_new_adapter参数创建新的适配器，是一种结合了预训练模型强大能力和任务特定微调灵活性的策略。这种方法既能保持模型的泛化能力，又能为特定任务提供定制化的优化，是处理复杂微调场景的有效手段。每一种训练策略的选择都应基于具体任务的需求、资源的可用性以及模型性能的目标来决定。
+
+
+模型蒸馏是一种将大型模型（教师模型）的知识转移到小型模型（学生模型）的技术，目的是让小型模型在保持较低资源消耗的同时，尽可能复现大型模型的表现。对于GPT和其他大型语言模型，蒸馏可以帮助创建更轻量级的模型，适用于资源受限的环境。LoRA（Low-Rank Adaptation）是一种模型参数化技术，可以用于微调大型语言模型，如GPT，通过向自注意力和/或前馈网络层中添加低秩矩阵来调整模型的行为。
+如果你想使用LoRA来实现某种形式的软微调（Soft Fine-Tuning, SFT）并进一步通过蒸馏技术精炼模型，可以遵循以下步骤：
+1. 训练或微调大型模型（教师模型）
+* 使用LoRA进行SFT：首先，在大型语言模型（如GPT-3）上应用LoRA技术进行软微调。这通常涉及到在特定任务上训练模型，如文本分类、问答等，而LoRA允许你在不显著增加参数数量的情况下微调模型。
+2. 准备学生模型
+* 选择小型架构：选择或设计一个小型的网络架构作为学生模型。这个模型应该比教师模型有更少的参数和层。
+3. 蒸馏
+* 温度蒸馏：使用带有温度参数的软标签，从教师模型到学生模型进行知识转移。这里的关键是使教师模型的输出（如概率分布）更加"平滑"，便于学生模型学习。
+* 特征蒸馏和对齐：除了输出层之外，也可以将教师模型和学生模型中间层的特征进行对齐，这通常涉及到最小化两者之间的某种距离度量，如欧几里得距离或KL散度。
+* 损失函数设计：蒸馏过程的损失函数通常是教师模型和学生模型输出之间差异的加权和，可能还包括学生模型和真实标签之间差异的项。
+4. 训练学生模型
+* 蒸馏训练：使用上述设计的损失函数进行训练，优化学生模型的参数，使其尽可能模仿教师模型的行为。
+5. 评估和调优
+* 性能评估：在独立的测试集上评估学生模型的性能，与教师模型进行比较，确保学生模型在保持轻量级的同时，也能达到接近教师模型的表现。
+* 迭代优化：基于评估结果，可能需要回到步骤2和步骤3进行学生模型的结构调整和蒸馏策略的优化。
+这个过程中的关键是平衡学生模型的大小（以及与之相关的计算资源消耗）和性能。通过细致的调优和迭代，可以创建出既轻量又高效的模型，适用于资源受限的应用场景。
+
+1. 有监督微调 (supervised fine-tuning，SFT)
+2. 用偏好标签标注数据
+3. 基于偏好数据训练奖励模型
+4. RL 优化
+
+
+================================
+
+Docker-ark
+
+
+模型量化
+在LLMs推理过程中，显存占用是个大问题，尤其是大模型参数大、资源有限的情况下。在使用VLLM前，虽然通过int8量化也能做到大大减少显存占用，但是推理速度也因为在线量化也变慢了，而像GPTQ这样的离线post-training量化方法也有它的局限性，比如训练成本、校准数据集的获取。所以换用了VLLM，也方便后期分布式部署，速度和显存占用都很令人满意。
+
+
+LLM速度慢的一大原因就是模型需要的显存大，那么到底是谁占用了这么多显存呢？对于自回归的模型，每次输入的tokens都会生成相应的key和value，这些KV值都会保存在显存中用于下一个token的预测，也就是所谓的KV Cache。这些cache能占大地儿呢？对一个13b的模型来说，一个序列的KV Cache就能达到1.7GB。除此之外，KV Cache的大小当然也跟输入序列的长短有关，所以它们的大小分布很不均匀，这就会导致显存的碎片化和过度留存，大约60%~80%的显存就这样被浪费掉了
+
+PageAttention的做法是，通过将KV Cache根据tokens划分为不同的块，每个块里存有相应tokens的key和value 值，这样就可以让连续的KV Cache可以放在不连续的空间里，从而使得显存管理更加高效。
+
+假设现在生成了一个token：future，现在要预测生成下一个token：of。那么在这个过程中不光需要用到future的hidden state，还需要用到之前每个token的hidden states，所以就需要把这些hidden states都存储起来，也就是KV Cache。
+但是有一个问题就是KV Cache非常的大，比如说拿LLaMA-13B举例子，假设每个token在一层的大小有20KB，LLaMA-13B有40层，这样这个token大小就会达到800KB，而一个sequence一般来说会有几千的token，也就是说一个sequence就会达到几个G。然而我们来看一下GPU，通常也就是40G，80G，就是说一个GPU都fit不了几个句子，这就不能接受，也使得KV Cache成为一个非常需要解决的问题。
+
+
+———————————————————————————————
+
+我们的gpu服务器的cuda版本是11.7的，那么我们可以拉取docker 镜像中cuda为12.x的镜像使用吗
+
+
+docker info | grep "Docker Root Dir"
+docker ps -a
+Docker images ls
+docker run -it [DOCKER_IMAGE]:[DOCKER_TAG] /bin/bash
+
+Docker ps —all
+ Docker rm XX
+Docker rmi XX
+
+
+docker run -it --network=host -e TZ=Asia/Shanghai -v /data:/root/data --name=yiche_summary_gpt --gpus '"device=1"' -e "LC_ALL=zh_CN.UTF-8" -e "LANGUAGE=zh_CN.UFT-8" -e "LANG=zh_CN.UFT-8" nvidia/cuda:11.7.1-cudnn8-devel-ubuntu22.04
+
+docker run -it --network=host -e TZ=Asia/Shanghai -v /data:/root/data --name=cuda12.1_test1 -e "LC_ALL=zh_CN.UTF-8" -e "LANGUAGE=zh_CN.UFT-8" -e "LANG=zh_CN.UFT-8" nvidia/cuda:12.1.0-cudnn8-devel-ubuntu20.04    (不用gpu)
+
+docker run -dit --network=host -e TZ=Asia/Shanghai -v /data:/root/data --name=david_classifer --gpus '"device=1"' -e "LC_ALL=zh_CN.UTF-8" -e "LANGUAGE=zh_CN.UFT-8" -e "LANG=zh_CN.UFT-8" pytorch/pytorch:2.0.1-cuda11.7-cudnn8-devel
+
+docker exec -it container_id /bin/bash
+
+$ docker commit \
+    --author "Tao Wang <twang2218@gmail.com>" \
+    --message "修改了默认网页" \
+    webserver \
+    nginx:v2
+
+# push到ark的仓库,只上传基础的环境
+docker login hub.bitautotech.com
+docker tag nvidia/cuda:11.8.0-cudnn8-devel-ubuntu22.04 hub.bitautotech.com/rc_nlp/cuda11.8:v1
+docker push hub.bitautotech.com/rc_nlp/cuda11.8:v1
+
+docker image rm my-image:v1     删除images
+
+cuda的
+runtime, devel, base, cudnn-runtime-ubi
+
+Ubi是嵌入式设备文件系统
+参考 https://www.cnblogs.com/devilmaycry812839668/p/17590168.html
+￼
+
+nvidia的docker的tag的三种类型
+base版本只安装了cuda，runtime版本安装了cuda、cudnn、nccl，devel版本在runtime版本基础上又安装了头文件及开发工具。个人建议还是安装devel版本，以免用到了没有出麻烦。
+
+显卡驱动是告诉系统如何调用显卡这个硬件，
+* 驱动版本越新越好，都是向下兼容的。新的驱动仍然支持旧的cuda，但旧的驱动就无法支持新版本的cuda。比如430.26的驱动只能支持到10.1的cuda，10.2和11.0的就不行。具体对应关系参照英伟达的说明。
+* 如果你使用的是脱胎换骨的显卡系列比如30系列，那么以上规则可能不适用。比如3090只支持11.1的cuda。有钱人的玩具我不懂：)
+* 同一个驱动版本可以用在不同型号的显卡（前提是这个型号的显卡有更新到该版本的驱动）。比如我一开始在1080上安装430.26的驱动，后来我把TITAN X (Pascal)装上去，一样可以正常用，不需要针对TITAN重装驱动。但是我为了支持cuda11想把驱动更新到450，这就行不通。因为NVIDIA已经停止对TITAN X (Pascal)更新驱动了，TITAN X (Pascal)最新驱动版本停留在2019年的436.15。
+
+
+cuda是构筑在显卡驱动之上的工具库（toolkit），cudnn是构筑在cuda之上的深度学习相关的工具库。因此，不管是做graphics（3D渲染等）还是搞深度学习，想要使用显卡都必须安装cuda，但做graphics的朋友就不需要安装cudnn,Conda是python环境的虚拟，用的cuda是本机的，docker是系统层的虚拟，用的是虚拟image的cuda驱动,如果不安装nvidia-container-toolkit，那么创建docker时可能会报错“docker: Error response from daemon: could not select device driver "" with capabilities: [[gpu]].”。安装方法请参考“”
+
+        docker容器是Linux下的虚拟机，并且在虚拟机下拥有root权限。这样既可以获取较高的权限，又可以避免对主机文件带来误操作。同一台主机上可以创建多个docker，并且每个docker中可安装不同版本CUDA，但是版本号不能高于主机CUDA驱动版本，否则可能会报错“CUDA driver version is insufficient for CUDA runtime version”。
+
+https://mirrors.tuna.tsinghua.edu.cn/anaconda/archive/Anaconda3-2024.02-1-Linux-x86_64.sh  下载conda
+
+Docker image 创建有 docker commit 和 docker build + Dockerfile
+https://yeasy.gitbook.io/docker_practice/image/build
+
+此外，使用 docker commit 意味着所有对镜像的操作都是黑箱操作，生成的镜像也被称为 黑箱镜像，换句话说，就是除了制作镜像的人知道执行过什么命令、怎么生成的镜像，别人根本无从得知。而且，即使是这个制作镜像的人，过一段时间后也无法记清具体的操作。这种黑箱镜像的维护工作是非常痛苦的。
+而且，回顾之前提及的镜像所使用的分层存储的概念，除当前层外，之前的每一层都是不会发生改变的，换句话说，任何修改的结果仅仅是在当前层进行标记、添加、修改，而不会改动上一层。如果使用 docker commit 制作镜像，以及后期修改的话，每一次修改都会让镜像更加臃肿一次，所删除的上一层的东西并不会丢失，会一直如影随形的跟着这个镜像，即使根本无法访问到。这会让镜像更加臃肿。
+
+
+
+￼
+
+
+
+￼
+
+Docker file，目的是自动的启动程序，不需要人工干预启动上传到git的程序，类似启动脚本，只是可以创建
+一个容器来运行，dockerfile可以把所有细节包含进去
+
+
+
+
+==============================================
+
+
+kev 交接
+
+交接文档（细节版）
+A800开机启动配置：
+/data01/shared_script/start.sh
+
+2. 物料&代码
+【讯飞语音】
+demo  存储路径：A800
+/data/kev/project/github/Bert-vits2-V2.3/output
+
+【demo】
+git:
+http://gitlab2.bitautotech.com/llm/demo.git
+url:
+http://voucheraigc.yichemall.com/
+A800:
+path:
+/data/kev/project/llm/demo
+conda env:
+kev_audio
+tmux session:
+kev_test
+
+【speech】
+git:
+http://gitlab2.bitautotech.com/llm/speech.git
+A800:
+path:
+/data/kev/project/llm/speech
+conda env:
+kev_audio2
+tmux session:
+kev_audio
+
+【llm_deploy】
+git:
+http://gitlab2.bitautotech.com/llm/llm_deploy.git
+A800:
+path:
+/data/kev/project/llm/llm_deploy
+
+【cv】
+git:
+http://gitlab2.bitautotech.com/llm/cv.git
+A800:
+path:
+/data/kev/project/llm/cv
+conda env:
+kev_cv
+tmux session:
+kev_cv
+
+【视频插帧】
+已废弃，迁移进CV
+
+【车辆抠图】
+已废弃
+git:
+http://gitlab2.bitautotech.com/llm/car_segmentor.git
+
+【内容审核】
+已废弃
+git:
+http://gitlab2.bitautotech.com/llm/content_check.git
+
+【yc_coder】
+已废弃
+git:
+http://gitlab2.bitautotech.com/llm/yc_coder.git
+
+
+
+
+
+交接文档（细节版）
+A800开机启动配置：
+/data01/shared_script/start.sh
+
+2. 物料&代码
+【讯飞语音】
+demo  存储路径：A800
+/data/kev/project/github/Bert-vits2-V2.3/output
+
+【demo】
+git:
+http://gitlab2.bitautotech.com/llm/demo.git
+url:
+http://voucheraigc.yichemall.com/
+A800:
+path:
+/data/kev/project/llm/demo
+conda env:
+kev_audio
+tmux session:
+kev_test
+
+【speech】
+git:
+http://gitlab2.bitautotech.com/llm/speech.git
+A800:
+path:
+/data/kev/project/llm/speech
+conda env:
+kev_audio2
+tmux session:
+kev_audio
+
+【llm_deploy】
+git:
+http://gitlab2.bitautotech.com/llm/llm_deploy.git
+A800:
+path:
+/data/kev/project/llm/llm_deploy
+
+【cv】
+git:
+http://gitlab2.bitautotech.com/llm/cv.git
+A800:
+path:
+/data/kev/project/llm/cv
+conda env:
+kev_cv
+tmux session:
+kev_cv
+
+【视频插帧】
+已废弃，迁移进CV
+
+【车辆抠图】
+已废弃
+git:
+http://gitlab2.bitautotech.com/llm/car_segmentor.git
+
+【内容审核】
+已废弃
+git:
+http://gitlab2.bitautotech.com/llm/content_check.git
+
+【yc_coder】
+已废弃
+git:
+http://gitlab2.bitautotech.com/llm/yc_coder.git
+
+
+
+======================================================
+
+大数据平台指令
+机器权限和访问
+
+客户数据机器:
+10.26.230.56
+账号 cxcp, 密码abRMt=BSwv5G  (用su cxcp)
+
+路径  /data/cxcp
+
+du -h --max-depth=1
+# 导出所有的新闻内容，只包含新闻内容
+hive --showHeader=false --outputformat=tsv2 -e "SELECT distinct itemid, title, summary, relate_app_tag_id, dtype, recommend_grade FROM ycrc_rc_eng.dws_all_reco_pool_a WHERE dtype in ('news', 'yichehao_news') and recommend_grade != 'Z' and gc not in ('AGC-XIAOYI', 'AGC-XIAOSHA') AND pt > '2023-01-01' and create_time >= '2023-01-01'" > 20230101_news_and_yichehao_news.csv
+
+
+# 导出标签
+hive --showHeader=false --outputformat=tsv2 -e "SELECT  * from ycrc_rc_eng.dwd_app_reco_tagm_new_tag_content_a
+where dt='2023-12-28'">1229_tagname.csv
+
+
+#导出所有内容标签信息
+hive --showHeader=false --outputformat=tsv2 -e "select id, tag_path, tag_path_name from ycrc_rc_eng.dwd_app_reco_tagm_new_tag_content_a where tag_type_name='内容标签' and dt>'2023-10-09'" > all_tag.csv
+
+*********************************************************************************************
+
+# 导出asr结果
+hive --showHeader=false --outputformat=tsv2 -e "SELECT video_id, result_asr
+FROM yc_ods.ods_app_videoforumv2_yd_async_detect_record_day_i
+WHERE result_asr != '[]' AND dt > '2023-11-09'"> 20231109_asr_content.csv
+
+hive --showHeader=false --outputformat=tsv2 -e "SELECT video_id, result_asr FROM yc_ods.ods_app_videoforumv2_yd_async_detect_record_day_i WHERE result_asr IS NOT NULL AND result_asr != '[]' AND dt > '2022-01-01’” > 20220101_asr_content.csv
+
+
+
+# 导出ocr结果
+
+hive --showHeader=false --outputformat=tsv2 -e "SELECT video_id, ocr_info
+FROM yc_ods.ods_app_videoforumv2_video_machine_audit_day_i
+WHERE ocr_info != '[]' AND dt > '2023-10-09'"> 20240122_ocr_content.csv
+
+hive --showHeader=false --outputformat=tsv2 -e "SELECT video_id, ocr_info FROM yc_ods.ods_app_videoforumv2_video_machine_audit_day_i WHERE ocr_info IS NOT NULL AND ocr_info != '[]' AND dt > '2022-01-01'" > 20220101_ocr_content.csv
+
+
+
+# 和下面的type为video的进行匹配关联video_id和itemid之间的关系,获取到relate_app_tag,然后去标签表找
+hive --showHeader=false --outputformat=tsv2 -e "SELECT distinct itemid, title, summary, relate_app_tag_id, dtype, recommend_grade FROM ycrc_rc_eng.dws_all_reco_pool_a WHERE dtype in ('yichehao_video') and recommend_grade!='Z' and gc not in ('AGC-XIAOYI','AGC-XIAOSHA') AND pt > '2023-06-01' and create_time>='2023-01-01'" > 20230101_yichehao_video.csv
+
+
+# 所有内容标签信息
+hive --showHeader=false --outputformat=tsv2 -e "SELECT  * from ycrc_rc_eng.dwd_app_reco_tagm_new_tag_content_a
+where tag_type_name='内容标签' and dt='2023-12-28'">20240122_tagname.csv
+
+
+
+######################################
+hive --showHeader=false --outputformat=tsv2 -e "SELECT b.video_id, b.ocr_info FROM (SELECT distinct itemid FROM ycrc_rc_eng.dws_all_reco_pool_a WHERE dtype = 'yichehao_video' AND recommend_grade != 'Z' AND gc NOT IN ('AGC-XIAOYI', 'AGC-XIAOSHA') AND pt > '2023-12-01’ AND create_time >= '2023-12-01’) a JOIN yc_ods.ods_app_videoforumv2_video_machine_audit_day_i b ON a.itemid = b.video_id WHERE b.ocr_info IS NOT NULL AND b.ocr_info != '[]'" >20231201_output_file.csv
+
+
+
+****************************************************
+
+Hive SQL指令
+
+https://query.bdp.yiche.com/query （大数据平台）
+
+https://sto.bdp.yiche.com/datalk/ (表查看和申请)
+
+https://sto.bdp.yiche.com/datalk/dataRetrieval 可以在这个平台搜表查看表字段解释
+
+
+2023.10.09
+ycrc_rc_eng.dwd_app_reco_tagm_new_tag_content_a  标签维度表 内容标签 id
+
+ycrc_rc_eng.dws_all_reco_pool_a 物料表. relate_app_tag_id
+
+yc_mds.mds_content_app_news_info_his 新闻内容表   (可以全天拉P0数据)
+
+
+SELECT itemid
+FROM ycrc_rc_eng.dws_all_reco_pool_a
+WHERE relate_app_tag_id IN (
+    SELECT CAST(id AS VARCHAR)
+    FROM ycrc_rc_eng.dwd_app_reco_tagm_new_tag_content_a
+    WHERE tag_type_name = '内容标签'
+    AND tag_name = '新车资讯'
+)
+AND dtype IN ('news', 'yichehao_news')
+AND pt > '2023-10-09'
+LIMIT 1000;
+
+
+
+# 全量数据
+SELECT dtype,count(distinct itemid)-- ,--title,summary,relate_app_tag_id,dtype,recommend_grade
+FROM ycrc_rc_eng.dws_all_reco_pool_a
+WHERE dtype in ('news','yichehao_news','yichehao_video') and recommend_grade!='Z' and gc not in ('AGC-XIAOYI','AGC_XIAOSHA')
+AND pt > '2023-10-09' and create_time>='2023-10-09'
+group by dtype
+limit 100
+**************************
+yichehao_news	2202517
+yichehao_video	291148
+news	2422
+****************************
+
+
+SELECT distinct itemid,title,summary,relate_app_tag_id,dtype,recommend_grade
+FROM ycrc_rc_eng.dws_all_reco_pool_a
+WHERE dtype in ('news','yichehao_news','yichehao_video') and recommend_grade!='Z' and gc not in ('AGC-XIAOYI','AGC-XIAOSHA')
+AND pt > '2023-10-09' and create_time>='2023-10-09'
+
+SELECT  * from ycrc_rc_eng.dwd_app_reco_tagm_new_tag_content_a
+where dt='2023-12-28' --and status=1 and
+--tag_type_name='内容标签'
+--group by status
+
+
+SELECT distinct itemid,title,summary,relate_app_tag_id,dtype,recommend_grade
+FROM ycrc_rc_eng.dws_all_reco_pool_a
+WHERE dtype in ('news','yichehao_news','yichehao_video') and recommend_grade!='Z' and gc not in ('AGC-XIAOYI','AGC-XIAOSHA')
+AND pt > '2023-10-09' and create_time>='2023-10-09'
+
+SELECT  * from ycrc_rc_eng.dwd_app_reco_tagm_new_tag_content_a
+where dt='2023-12-28' and status=1 and tag_type_name='内容标签'
+--group by status
+
+
+SELECT  * from yc_ods.ods_app_videoforumv2_video_machine_audit_day_i limit 100
+
+select * from yc_ods.ods_app_videoforumv2_yd_async_detect_record_day_i limit 100
+
+然后内容标签，除了新车资讯外的其他一级标签数据作为负例进行训练
+新车资讯下的标签作为正例进行训练
+
+
+SELECT  * from ycrc_rc_eng.dwd_app_reco_tagm_new_tag_content_a
+where dt='2023-12-28' and status=1 and tag_type_name='内容标签'
+
+视频和新闻模型是不是能迁移
+
+
+SELECT  * from yc_ods.ods_app_videoforumv2_video_machine_audit_day_i limit 100
+# 寻找ocr中属于内容标签下的所以得二级标签，因为内容标签可以通过二分类进行过滤
+#导出ocr的结果和对应的标签
+SELECT
+    yc_ods.ods_app_videoforumv2_video_machine_audit_day_i.ocr_info,
+    dwd_app_reco_tagm_new_tag_content_a.tag_path,
+    dwd_app_reco_tagm_new_tag_content_a.tag_path_name
+FROM
+    yc_ods.ods_app_videoforumv2_video_machine_audit_day_i
+INNER JOIN
+    dwd_app_reco_tagm_new_tag_content_a
+ON
+    yc_ods.ods_app_videoforumv2_video_machine_audit_day_i.id = dwd_app_reco_tagm_new_tag_content_a.id
+WHERE
+    yc_ods.ods_app_videoforumv2_video_machine_audit_day_i.ocr_info != '[]'
+    AND yc_ods.ods_app_videoforumv2_video_machine_audit_day_i.dt > '2023-10-09'
+    AND dwd_app_reco_tagm_new_tag_content_a.tag_type_name = '内容标签';
+
+
+
+select * from yc_ods.ods_app_videoforumv2_yd_async_detect_record_day_i limit 100
+
+#导出asr结果和对应的标签
+SELECT yc_ods.ods_app_videoforumv2_yd_async_detect_record_day_i.result_asr,
+       dwd_app_reco_tagm_new_tag_content_a.tag_path,
+       dwd_app_reco_tagm_new_tag_content_a.tag_path_name
+FROM yc_ods.ods_app_videoforumv2_yd_async_detect_record_day_i
+INNER JOIN dwd_app_reco_tagm_new_tag_content_a
+ON yc_ods.ods_app_videoforumv2_yd_async_detect_record_day_i.id = dwd_app_reco_tagm_new_tag_content_a.id
+WHERE yc_ods.ods_app_videoforumv2_yd_async_detect_record_day_i.result_asr != '[]'
+AND yc_ods.ods_app_videoforumv2_yd_async_detect_record_day_i.dt > '2023-10-09'
+AND dwd_app_reco_tagm_new_tag_content_a.tag_type_name = '内容标签';
+
+##################################################################
+ 导出asr结果 一样的只有一个id
+hive --showHeader=false --outputformat=tsv2 -e "SELECT id, result_asr
+FROM yc_ods.ods_app_videoforumv2_yd_async_detect_record_day_i
+WHERE result_asr != '[]' AND dt > '2023-10-09'"> asr_content.csv
+
+导出ocr结果,这个里面只有一个id，没有tag
+
+hive --showHeader=false --outputformat=tsv2 -e "SELECT id, ocr_info
+FROM yc_ods.ods_app_videoforumv2_video_machine_audit_day_i
+WHERE ocr_info != '[]' AND dt > '2023-10-09'"> ocr_content.csv
+
+和下面的type为video的进行匹配，关联id和itemid之间的关系,获取到relate_app_tag,然后去标签表找
+hive --showHeader=false --outputformat=tsv2 -e "SELECT distinct itemid,title,summary,relate_app_tag_id,dtype,recommend_grade
+FROM ycrc_rc_eng.dws_all_reco_pool_a
+WHERE dtype in ('yichehao_video') and recommend_grade!='Z' and gc not in ('AGC-XIAOYI','AGC-XIAOSHA')
+AND pt > '2023-10-09' and create_time>='2023-10-09'">1229_newsvideo.csv
+
+
+#导出标签表
+hive --showHeader=false --outputformat=tsv2 -e "SELECT  * from ycrc_rc_eng.dwd_app_reco_tagm_new_tag_content_a
+where dt='2023-12-28'">1229_tagname.csv
+
+
+
+方案
+
+12月29号： 数据拉取、清洗
+1月2号~1月3号 ：训练是否新车二分类模型、新车下多标签模型、车展策略
+1月4号： 效果调优，交付P0标签（29个）的准召结果
+1月5号： 接口开发，交付服务
+
+（1）车展活动等直接判断Tag3的标签属于什么车展———正则判断
+（2）二分类模型筛选出新车资讯下的Tag1标签 ——— 二分类模型 (包括子类属于这个类别也属于正例)
+（3）新车资讯下的Tag2标签下的内容———— 多分类标签
+
+
+多分类精度为准确率，多标签和层次分类精度为Macro F1值
+
+方案:https://github.com/PaddlePaddle/PaddleNLP/tree/develop/applications/text_classification
+
+
+paddlegpu和paddlenlp框架的参考
+https://www.paddlepaddle.org.cn/install/quick?docurl=/documentation/docs/zh/install/pip/linux-pip.html
+
+
+模型下载网址
+https://www.atyun.com/models/files/bert-base-chinese.html
+
+多标签数据统计
+SELECT count(*)
+FROM ycrc_rc_eng.dws_all_reco_pool_a
+WHERE relate_app_tag_id IN (
+    SELECT CAST(id AS VARCHAR)
+    FROM ycrc_rc_eng.dwd_app_reco_tagm_new_tag_content_a
+    WHERE tag_type_name = '内容标签'
+    AND tag_name = '谍照'
+)
+AND dtype IN ('news', 'yichehao_news')
+AND recommend_grade!='Z'
+AND gc not in ('AGC-XIAOYI','AGC_XIAOSHA')
+AND pt > '2023-10-09'
+AND create_time>='2023-10-09'
+LIMIT 1000;
+
+====》 757
+
+======================================================
+
+
+周报流水账
+
+周报：20231218 至 20231222
+
+项目进展
+
+项目 1：概要提取，私有模型
+新闻资料摘要生成第二版改进
+
+(1)前期因为使用单个模型进行信息压缩导致效果不佳，第二版结合大小模型串行推理，效果得到提升
+(2)已经对业务提供的大约4500条数据推理完毕，对比文档已经交付给产品&业务方进行人工评价
+
+项目2：新内容机打标签
+对P0和P1的标签进行自动打标
+
+(1) 整理excel文本转为json格式，方便后续模型测试和微调
+(2) 正在测试用多个传统分类器对文本分类进行本地测试
+
+
+下周计划
+
+项目1: 继续跟进，如果业务方有反馈继续优化
+
+项目2：本地化测试分类模型，在P0和P1标签上进行前期测试
+
+周报：20231225 至 20231229
+
+项目进展
+
+项目1：新内容机打标签, 调研P0和P1的标签进行自动打标效果
+
+(1) 基于BERT based模型训练一个多分类器，同时对一个月数据的进行分类测试
+(2) 实验消融结果包括所有的，P0，P1的分类效果，实验结果已共享分析
+
+
+下周计划
+
+项目1: 针对性对P0标签打标
+
+12月29号： 数据拉取、清洗
+1月2号~1月3号 ：训练是否新车二分类模型、新车下多标签模型、车展策略
+1月4号： 效果调优，交付P0标签（29个）的准召结果
+1月5号： 接口开发，交付服务
+
+
+周报：20240108 至 20240112
+
+项目进展
+
+(1) 根据全量P0标签数据，训练出新车资讯二分类模型，正则分类车展分类模型和P0的多标签分类模型
+(2) P0标签分类初步测试结果已经交付给业务进行判断
+(3) 新闻摘要生成优化版本结果交付给业务判断
+(4) 对P0和P1的小样本标签数据进行摘要生成增强
+
+
+下周计划
+(1) P0数据小样本标签数据数据增强生成
+(2) 测试小样本场景下的分类模型
+
+
+
+周报：20240115 至 20240119
+
+项目进展
+
+(1) P0多标签优化，在比如新车解析，新车上市等标签上P值优化到80%
+(2) 其中P0小样本预测经过样本增强，平衡处理后效果提升有限，通过调节topk和阈值可以适当提升
+(3) 对小样本原始分布分析发现小样本标签区分度不明显
+(4) 使用搜狗预训练词向量进行增强，在P0和P1二分类上指标得到提升，从原来的89%提升到92%
+(4) P1多标签分类结果已出，其中评测导购，试驾，对比导购等几个标签P值可以维持80%，小样本依然需要单独增强区分
+
+下周计划
+(1) P0和P1小样本单独使用传统模型xgboost，svm进行区分
+(2) 调整阈值看看预测效果
+(3) 使用BERT进行语义编码，再结合textcnn进行分类训练，应该可以更进一步提升效果
+
+
+
+周报：20240122 至 20240125
+
+项目进展
+
+(1) P0二级多标签优化，分别训练BERT+预训练词向量(已完成，指标如下)，BERT+textcnn(正在训练)和Textcnn(已完成，指标参考如下)三个模型进行预测，其中指标如下所示(以下均基于测试集)
+
+TextCNN优化(15epoch+60epoch，已完成):
+Label: 新车解析, Precision: 0.900, Recall: 0.9527, F-Score: 0.92
+Label: 新车报价, Precision: 0.7998, Recall: 0.6847, F-Score: 0.7378
+Label: 新车上市, Precision: 0.8250, Recall: 0.633, F-Score: 0.7170
+Label: 发布亮相, Precision: 0.7559, Recall: 0.5962 F-Score: 0.6666
+Label: 预热, Precision: 0.8045, Recall: 0.4816, F-Score: 0.6025
+Label: 预售, Precision: 0.8721, Recall: 0.4865, F-Score: 0.6246
+Label: 配置曝光, Precision: 0.34375, Recall: 0.08943, F-Score: 0.1419    (*)
+Label: 谍照, Precision: 0.8724, Recall: 0.5150, F-Score: 0.6477
+Label: 实车曝光, Precision: 0.6868, Recall: 0.2336, F-Score: 0.3487
+Label: 新车官图, Precision: 0.5109, Recall: 0.3381, F-Score: 0.4070  (*)
+Label: 申报图, Precision: 0.8064, Recall: 0.4048, F-Score: 0.5390    （60epoch）
+Label: 新车到店, Precision: 0.7352, Recall: 0.3424, F-Score: 0.4672    (60epoch)
+
+BERT优化(30epoch，已完成):
+
+Label 谍照 - Precision: 0.9628, Recall: 0.7138, F1-Score: 0.8198
+Label 实车曝光 - Precision: 0.9154, Recall: 0.6073, F1-Score: 0.7302
+Label 配置曝光 - Precision: 0.5746, Recall: 0.6154, F1-Score: 0.5943  (*)
+Label 申报图 - Precision: 0.9359, Recall: 0.6096, F1-Score: 0.7383
+Label 预热 - Precision: 0.8735, Recall: 0.6749, F1-Score: 0.7614
+Label 新车上市 - Precision: 0.9364, Recall: 0.6030, F1-Score: 0.7336
+Label 预售 - Precision: 0.8812, Recall: 0.5688, F1-Score: 0.6913
+Label 发布亮相 - Precision: 0.8762, Recall: 0.6306, F1-Score: 0.7334
+Label 新车官图 - Precision: 0.7816, Recall: 0.4305, F1-Score: 0.5552  (*)
+Label 新车报价 - Precision: 0.9327, Recall: 0.5830, F1-Score: 0.7175
+Label 新车到店 - Precision: 0.8523, Recall: 0.4076, F1-Score: 0.5515
+Label 新车解析 - Precision: 0.9461, Recall: 0.9895, F1-Score: 0.9673
+
+(2) BERT哈工大中文模型(正在训练中,epoch3)
+
+Label 谍照 - Precision: 0.5000, Recall: 1.0000, F1-Score: 0.6667
+Label 实车曝光 - Precision: 0.0000, Recall: 0.0000, F1-Score: 0.0000
+Label 配置曝光 - Precision: 0.0000, Recall: 0.0000, F1-Score: 0.0000
+Label 申报图 - Precision: 1.0000, Recall: 1.0000, F1-Score: 1.0000
+Label 预热 - Precision: 0.5102, Recall: 0.6098, F1-Score: 0.5556
+Label 新车上市 - Precision: 0.6627, Recall: 0.7990, F1-Score: 0.7245
+Label 预售 - Precision: 0.8963, Recall: 0.6914, F1-Score: 0.7806
+Label 发布亮相 - Precision: 0.7199, Recall: 0.7700, F1-Score: 0.7441
+Label 新车官图 - Precision: 0.8750, Recall: 0.7778, F1-Score: 0.8235
+Label 新车报价 - Precision: 0.8177, Recall: 0.7690, F1-Score: 0.7926
+Label 新车到店 - Precision: 1.0000, Recall: 0.3333, F1-Score: 0.5000
+Label 新车解析 - Precision: 0.9696, Recall: 0.9888, F1-Score: 0.9791
+
+(3) TextCNN,搜狗预训练词向量二级标签多标签分类(训练中)
+(4) 集成模型推理 (进行中)
+(5) 视频标签数据用TextCNN （训练中）
+(6) P0二级标签预测结果优化一版已经给到业务  (已完成)
+(7) 新闻摘要优化了一版已经给到产品 (已完成)
+(8) 车展标签结果给到业务方已反馈,准备优化 （已完成）
+
+
+下周计划
+
+(1) 集成上面三个模型的共同推理结果进行P0二级标签结果推理，再出一版优化结果给业务方
+(2) P1标签采用上面的模型进行训练
+(3) 车展二级标签预测优化
+
+
+
+周报：20240129 至 20240202
+
+项目进展
+以下均基于test 数据集
+(1) P0二级标签优化，基于yiche video的数据  BERT wwm large
+Label 谍照 - Precision: 0.9785, Recall: 0.9479, F1-Score: 0.9630
+Label 实车曝光 - Precision: 0.8182, Recall: 0.9000, F1-Score: 0.8571
+Label 配置曝光 - Precision: 0.7391, Recall: 0.9444, F1-Score: 0.8293    (*)
+Label 申报图 - Precision: 0.9565, Recall: 0.9362, F1-Score: 0.9462
+Label 预热 - Precision: 0.9041, Recall: 0.9209, F1-Score: 0.9124
+Label 新车上市 - Precision: 0.9381, Recall: 0.9624, F1-Score: 0.9501
+Label 预售 - Precision: 0.9563, Recall: 0.9012, F1-Score: 0.9280
+Label 发布亮相 - Precision: 0.9242, Recall: 0.8512, F1-Score: 0.8862
+Label 新车官图 - Precision: 0.9737, Recall: 0.9487, F1-Score: 0.9610
+Label 新车报价 - Precision: 0.9548, Recall: 0.9373, F1-Score: 0.9460
+Label 新车到店 - Precision: 0.8182, Recall: 0.9474, F1-Score: 0.8780
+Label 新车解析 - Precision: 0.9933, Recall: 0.9761, F1-Score: 0.9846
+
+(2) P0二级标签 （基于yiche  video 和news合并数据 epoch14，正在训练中，但是初步结果如下） BERT wwm large
+Label 谍照 - Precision: 0.9273, Recall: 0.9808, F1-Score: 0.9533
+Label 实车曝光 - Precision: 0.8571, Recall: 0.9231, F1-Score: 0.8889
+Label 配置曝光 - Precision: 0.8421, Recall: 0.8889, F1-Score: 0.8649
+Label 申报图 - Precision: 0.9286, Recall: 0.9630, F1-Score: 0.9455
+Label 预热 - Precision: 0.9022, Recall: 0.7981, F1-Score: 0.8469
+Label 新车上市 - Precision: 0.9318, Recall: 0.8662, F1-Score: 0.8978
+Label 预售 - Precision: 0.9062, Recall: 0.8969, F1-Score: 0.9016
+Label 发布亮相 - Precision: 0.8710, Recall: 0.8020, F1-Score: 0.8351
+Label 新车官图 - Precision: 0.9167, Recall: 0.8148, F1-Score: 0.8627
+Label 新车报价 - Precision: 0.9349, Recall: 0.9029, F1-Score: 0.9186
+Label 新车到店 - Precision: 0.7273, Recall: 0.8000, F1-Score: 0.7619
+Label 新车解析 - Precision: 0.9947, Recall: 0.9804, F1-Score: 0.9875
+
+其中yiche videos+yiche news后merge的数据分布：
+Label: 谍照, Count: 8354, Proportion: 0.04
+Label: 实车曝光, Count: 5487, Proportion: 0.02
+Label: 配置曝光, Count: 10197, Proportion: 0.05
+Label: 申报图, Count: 4966, Proportion: 0.02
+Label: 预热, Count: 28486, Proportion: 0.13
+Label: 新车上市, Count: 65213, Proportion: 0.29
+Label: 预售, Count: 21557, Proportion: 0.10
+Label: 发布亮相, Count: 37196, Proportion: 0.16
+Label: 新车官图, Count: 3916, Proportion: 0.02
+Label: 新车报价, Count: 67806, Proportion: 0.30
+Label: 新车到店, Count: 1441, Proportion: 0.01
+Label: 新车解析, Count: 150277, Proportion: 0.67
+
+(3) P1二级多标签优化，BERT+textcnn(正在训练，训练太久) 和 BERT wwm large模型(训练大约在4-5天,已完成) 基于yiche news 数据
+Label 车系品牌解读 - Precision: 0.9693, Recall: 0.9630, F1-Score: 0.9662
+Label 单车导购 - Precision: 0.9114, Recall: 0.9267, F1-Score: 0.9190
+Label 对比导购 - Precision: 0.9554, Recall: 0.9572, F1-Score: 0.9563
+Label 多车导购 - Precision: 0.9277, Recall: 0.8516, F1-Score: 0.8880
+Label 购车手册 - Precision: 0.9392, Recall: 0.8997, F1-Score: 0.9190
+Label 买车技巧 - Precision: 0.9385, Recall: 0.8592, F1-Score: 0.8971
+Label 评测导购 - Precision: 0.9035, Recall: 0.9061, F1-Score: 0.9048
+Label 汽车分享 - Precision: 0.9448, Recall: 0.7290, F1-Score: 0.8230
+Label 试驾 - Precision: 0.8755, Recall: 0.9194, F1-Score: 0.8969
+Label 探店报价 - Precision: 0.8291, Recall: 0.7823, F1-Score: 0.8050
+Label 无解说车辆展示 - Precision: 0.8857, Recall: 0.7949, F1-Score: 0.8378
+Label 营销导购 - Precision: 0.9714, Recall: 0.7445, F1-Score: 0.8430
+
+(5) P0和P1优化版本数据给到业务(已完成)
+(6) 新闻摘要反馈已收到，正在优化输出的数字部分 (正在进行)
+
+
+下周计划
+
+(1) 优化新闻摘要的数字部分，下周四交付一版
+(2) P1二级标签预测继续优化，计划用大模型的指令优化看看效果
+(3) 尝试用Llama看看文本特征提取效果是否优于BERT，下周四出一版版本
+
+
+
+周报：20240204 至 20240223
+
+项目进展
+(1)P0,P1标签数据模型推理结果给到业务进行评估 （等待反馈结果）
+(2)新闻摘要业务反馈进行修改，其中主要修复了输出的部分的价格存在错误，比如单位不对，小数点后数字忽视，其次包括存在一些总结的意义不明的信息 （已修复）
+(3)P2标签推理的结果给到业务正在评估 （等待反馈结果）
+(4)年前修复的新闻摘要得到反馈，目前存在一些特殊字符需要消除的非数字错误的问题(正在修复)
+(5) 基于大模型的SFT微调尝试预测标签 （待继续测试）
+
+下周计划
+(1) 新闻摘要代码优化，API封装
+(2) 整合P0，P1，P2的模型，加快推理速度并封装成API
+(3) 对新闻摘要目前待修复的问题使用正则继续完善，争取在下周能给到一个完整版本
+
+
+周报：20240226 至 20240301
+
+项目进展
+(1) 部署P0和P1的docker线上推理环境 （可以调通，正在测试）
+(2) 同开发进行标签接口对接 (对接中)
+(3)新闻摘要存在一些特殊字符需要消除的非数字错误的问题(已修复，待反馈)
+(4) 基于大模型的SFT微调尝试预测标签 （Qwen大模型做SFT微调不适合做分类任务，继续测试其他模型）
+
+下周计划
+(1) 新闻摘要服务化
+(2) P0和P1标签预测继续进行接口调试
+
+
+周报：20240304 至 20240308
+
+项目进展
+(1) 部署P0,P1,P2的线上推理环境 (已完成)
+(2) 接口文档(已完成)
+(3)新闻摘要交给业务进行检查(已完成，待反馈)
+
+下周计划
+(1) 部署新闻摘要接口和服务
+(2) 实时动态更新P0,P1,P2模型功能
+(3) 对单个指标下滑的标签进行优化
+
+
+
+周报：20240311 至 20240315
+
+项目进展
+(1) 新闻摘要交给业务进行检查(已完成,准备上线)
+(2) 标签分类模型分开部署，由单一webservice变为两个service，提高鲁棒性（已完成）
+(3) 易车汽车领域 BERT和GPT预训练模型小批量测试 (进行中，预计下周给初步结果)
+
+下周计划
+(1) 配合上线新闻摘要和标签分类
+(2) 易车汽车领域预训练模型出小范围测试结果
+
+周报：20240318 至 20240322
+
+项目进展
+(1) 新闻摘要需要减少推理时间，这个目前已经尝试了量化，本地llama.cpp部署 (仍在进行中，时间如果要压缩到5s内还是有难度，量化太多的话准确度会降低)
+其中细节如下:
+1. 使用零一万物34b平均多轮推理速度在5-8s,长文本情况需要进行切分，需要多次调用
+2. Qwen7b推理虽然快，但存在内容损失场景
+3. 经过统计，打算长文本继续用Oyi34b进行推理，保证准确度，短文本用Qwen14b加快速度
+4. 测试了量化版本0Yi-34b-8bits和4bits,发现显存降低了1/3，但是推理速度并没有降低,甚至更久了点(待考虑)，推理结果和原版偏差不大
+5. 安装flashattention尝试加快0Yi34b，效果不明显
+6. 推理速度优化方案主要集中在降低推理次数，尽量使用小模型
+￼
+上面是目前易车新闻的字数分布统计，在1500字一下的情况使用小模型推理，1500字以上可以使用大模型，这样加快推理速度
+
+(2) 易车汽车领域 BERT预训练模型（已完成，在大约50M的数据集上进行MASK预训练,NSP存在数据集构造困难，且对模型影响不大）GPT预训练模型(小样本数据已完成,纯txt文本，大概在50M)，后面需要在通用数据集上进行评估
+
+下周计划
+(1) 配合上线新闻摘要(目标是降低推理时间在5s内,主要任务)
+(2) 易车汽车领域预训练模型(BERT和GPT)在通用数据集上进行评估，包括OCNLI推理数据集、OCEMOTION情感分析数据集和TNEWS新闻分类数据集
+
+
+周报：20240325 至 20240329
+
+项目进展
+(1)由于推理速度慢，目前已经替换零一34bchat模型为qwen14b-chat模型，重新生成了大约1000多篇文章摘要总结，模型总结能力可以上线 (已完成)
+(2) 由于A800和A100包括V100机器的cuda版本偏低，为11.x并不支持目前主流的加速框架，当在4090，cuda12.1环境下安装测试了vllm，推理速度可以大幅提升  （已完成）
+(3) 熟悉ark镜像提交部署流程 ，并已经提交cuda12.1+vllm的镜像待流程调通 (进行中)
+
+下周计划
+(1) 走通ark镜像管理流程，并在4090机器上完成摘要模型部署
+(2) 汽车领域BERT预训练模型测试
+
+
+周报：20240408 至 20240412
+
+项目进展
+(1)多标签分类业务需要一版接口测试数据 (已完成)
+(2) 新闻摘要本地模型和gpt4对比结果已发送到产品 （已完成）
+(3) vits模型梳理和音频数据集整理(已完成)
+(4) TTS项目交接调研 (进行中)
+(5) GPT,BERT预训练模型数据清洗和环境迁移 (待定)
+
+下周计划
+(1) 预训练数据整理清晰
+(2) TTS语音数据收集梳理，初步训练
+
+
+
+周报：20240415 至 20240419
+
+项目进展
+(1)多标签分类模型迁移 (进行中)
+(2) 新闻摘要本地14b模型部署在4090机器，双卡推理(已完成)
+(3) tts模型调研，目前正在搭建text到梅尔谱图的模型，包括fastspeech2(正在进行)
+(4) GPT,BERT预训练模型环境迁移到A800 (已完成)
+
+下周计划
+(1) 多标签分类模型迁移到A30
+(2) fastspeech2模型本地化训练
+
+
+===================================================
+p3_1:
+    技术与评测: 1
+p3_2:
+    评测: 78
+p3_3:
+    静态评测: 81
+    动态评测: 219
+    安全测试: 427
+    能耗测试: 793
+    音响测试: 0
+    噪音测试: 48
+    性能测试: 1754
+    长测: 45
+    对比评测: 190
+    横评: 66
+p3_4:
+    拆解评测: 239
+    构造评测: 12
+    碰撞测试: 805
+
+
+p4_1:
+    技术与评测: 1
+    汽车周边: 9
+p4_2:
+    汽车技术: 2533
+    汽车活动: 166
+    驾驶记录: 6
+    美图分享: 2
+    汽车历史: 361
+    海外车事: 368
+p4_3:
+    三大件技术: 2320
+    安全技术: 512
+    生产与制造: 414
+    智能驾驶: 8051
+    新能源技术: 6628
+    车友聚会: 29
+    赛事活动: 1023
+    汽车美图: 58
+    美女车模: 11
+    经典车历史: 527
+    老车修复: 31
+    品牌成长史: 825
+    情怀老车: 207
+    海外新车: 7875
+    海外评测: 48
+p4_4:
+    结构与材料: 845
+    被动安全: 46
+    F1方程式: 470
+    老爷车: 40
+
+
+
+其他的:
+t2:
+买车相关: 62
+t3:
+等车日记: 8
+购车价格: 191
+购车选装: 69
+购车装饰: 0
+买车经历: 635
+汽车上牌: 38
+晒/下订单: 30
+提车感受: 911
+T4:
+提车仪式: 31
+
+
+T2:
+维修保养: 501
+T3:
+故障维修: 1099
+汽车保养: 883
+汽车配件: 678
+T4:
+配件对比: 81
+配件价格: 13
+配件介绍: 165
+
+
+T2:
+用车相关: 212
+T3:
+用车成本: 685
+交管业务: 25
+车辆保险: 333
+车载好物: 180
+汽车美容: 176
+日常: 146
+汽车改装: 2497
+汽车改色: 218
+车内改装: 831
+车主主观感受: 6061
+用车疑问: 42
+汽车能耗: 942
+汽车配置: 671
+T4:
+车辆年检: 157
+车辆违章: 33
+驾考: 232
+OTA: 2181
+
+===============================
+Linux指令总结
+
+Conda 环境
+安装虚拟环境到指定路径的命令如下：
+conda create --prefix=D:\python36\py36 python=3.6
+conda create —prefix /data/david/anaconda3/envs/tags_classification python=3.9
+
+激活conda环境
+conda init
+source activate /data/david/anaconda3/envs/tags_classification
+
+
+
+activate D:\python36\py36
+
+deactivate
+
+conda remove --prefix=D:\python36\py36 --all.  删除依赖
+
+conda env remove -n caffe  删除环境
+
+Use pwdx to see the file path
+
+
+如果是多卡训练，请对应修改 sh 中的：CUDA_VISIBLE_DEVICES=0 torchrun --nproc_per_node 1。例如 4 卡训练可以改为：CUDA_VISIBLE_DEVICES=0,1,2,3 torchrun --nproc_per_node 4
+
+
+
+# tmux ls
+keepMe: 1 windows (created Wed Jun 24 14:20:15 2015) [171x41]
+otherSession: 1 windows (created Wed Jun 24 14:22:01 2015) [171x41]
+3: 1 windows (created Wed Jun 24 14:23:28 2015) [171x41]
+
+(assuming here that you're on keepMe session)
+# tmux kill-session -t otherSession
+-or-
+# tmux kill-session -t 3
+
+
+conda create --name base --clone my_env
+
+# 对外开放的域名和端口
+voucheraigc.yichemall.com
+
+服务器开放端口号是 19001,19002,19003
+
+
+select * from ycrc_rc_eng.dwd_app_reco_tagm_new_tag_content_a limit 20
+
+where dt>='2023-12-20' and id=1000477;
+(根据分区查询表数据)
+
+
+show partitions ycrc_rc_eng.dwd_app_reco_tagm_new_tag_content_a
+(查看表的分区)
+
+
+
+select * from ycrc_rc_eng.dws_all_reco_pool_a where itemid='86939713' and pt >='2023-12-20'
+
+查物料id对应的信息
+
+TF-IDF算法，进行打标
+
+
+Rz -be 可以上传中断的问题
+
+ssh -p 51870 root@connect.westb.seetacloud.com
+
+IpBY9elZKcAN
+
+
+
+Openai:
+
+unmxe388@amdyes.asia
+Vwjqfk574198
+
+
+
+
+赵洪江  6228 4800 1077 1615 415 农业银行   房租
+
+
+92460000MADC2UJ3XC
+
+
+华纳云
+154.19.84.129
+Vn5Zp8Jn1Bv9
+
+
+数据库账号资料
+数据库名：www_gptzhiyu_com
+用户：www_gptzhiyu_com
+密码：XZ2iycYARMJWn5HS
+
+
+
+
+
+
+
+
+
+
+
+

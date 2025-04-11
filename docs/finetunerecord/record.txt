@@ -1,0 +1,264 @@
+
+20240124实验记录
+***********************************************************************************************************************
+数据集比例  all_data.csv
+Label: 谍照, Count: 3280, Proportion: 0.01
+Label: 实车曝光, Count: 2920, Proportion: 0.00
+Label: 配置曝光, Count: 5111, Proportion: 0.01
+Label: 申报图, Count: 2567, Proportion: 0.00
+Label: 预热, Count: 16440, Proportion: 0.03
+Label: 新车上市, Count: 35063, Proportion: 0.05
+Label: 预售, Count: 10616, Proportion: 0.02
+Label: 发布亮相, Count: 19564, Proportion: 0.03
+Label: 新车官图, Count: 2860, Proportion: 0.00
+Label: 新车报价, Count: 35719, Proportion: 0.06
+Label: 新车到店, Count: 817, Proportion: 0.00
+Label: 新车解析, Count: 95190, Proportion: 0.15
+Label: 其他, Count: 531182, Proportion: 0.83
+
+
+多标签数据集  all_multilabel_data.csv
+Label: 谍照, Count: 3280, Proportion: 0.03
+Label: 实车曝光, Count: 2920, Proportion: 0.03
+Label: 配置曝光, Count: 5111, Proportion: 0.05
+Label: 申报图, Count: 2567, Proportion: 0.02
+Label: 预热, Count: 16440, Proportion: 0.15
+Label: 新车上市, Count: 35063, Proportion: 0.31
+Label: 预售, Count: 10616, Proportion: 0.10
+Label: 发布亮相, Count: 19564, Proportion: 0.18
+Label: 新车官图, Count: 2860, Proportion: 0.03
+Label: 新车报价, Count: 35719, Proportion: 0.32
+Label: 新车到店, Count: 817, Proportion: 0.01
+Label: 新车解析, Count: 95190, Proportion: 0.85
+Label: 其他, Count: 0, Proportion: 0.00
+
+
+下面是在 多标签数据集  all_multilabel_data.csv 的实验结果
+############# Epoch 20: Validation Start #############
+Epoch: 20       Average Training Loss: 0.000064         Average Validation Loss: 0.001018
+Validation loss decreased (0.001033 --> 0.001018). Saving model ...
+############# Epoch 20 Done #############
+
+############# Test Start #############
+Label 谍照 - Precision: 0.9628, Recall: 0.7138, F1-Score: 0.8198
+Label 实车曝光 - Precision: 0.9154, Recall: 0.6073, F1-Score: 0.7302
+Label 配置曝光 - Precision: 0.5746, Recall: 0.6154, F1-Score: 0.5943
+Label 申报图 - Precision: 0.9359, Recall: 0.6096, F1-Score: 0.7383
+Label 预热 - Precision: 0.8735, Recall: 0.6749, F1-Score: 0.7614
+Label 新车上市 - Precision: 0.9364, Recall: 0.6030, F1-Score: 0.7336
+Label 预售 - Precision: 0.8812, Recall: 0.5688, F1-Score: 0.6913
+Label 发布亮相 - Precision: 0.8762, Recall: 0.6306, F1-Score: 0.7334
+Label 新车官图 - Precision: 0.7816, Recall: 0.4305, F1-Score: 0.5552
+Label 新车报价 - Precision: 0.9327, Recall: 0.5830, F1-Score: 0.7175
+Label 新车到店 - Precision: 0.8523, Recall: 0.4076, F1-Score: 0.5515
+Label 新车解析 - Precision: 0.9461, Recall: 0.9895, F1-Score: 0.9673
+Label 其他 - Precision: 0.0000, Recall: 0.0000, F1-Score: 0.0000
+Test Loss: 0.000370
+############# Test End #############
+***********************************************************************************************************************
+
+20240125记录
+***********************************************************************************************************************
+去除content很少的情况重新进行统计,多标签数据集  all_multilabel_data.csv
+Label: 谍照, Count: 3280, Proportion: 0.03
+Label: 实车曝光, Count: 2920, Proportion: 0.03
+Label: 配置曝光, Count: 5111, Proportion: 0.05
+Label: 申报图, Count: 2567, Proportion: 0.02
+Label: 预热, Count: 16440, Proportion: 0.15
+Label: 新车上市, Count: 35062, Proportion: 0.31
+Label: 预售, Count: 10616, Proportion: 0.10
+Label: 发布亮相, Count: 19564, Proportion: 0.18
+Label: 新车官图, Count: 2860, Proportion: 0.03
+Label: 新车报价, Count: 35718, Proportion: 0.32
+Label: 新车到店, Count: 817, Proportion: 0.01
+Label: 新车解析, Count: 95186, Proportion: 0.85
+Label: 其他, Count: 0, Proportion: 0.00
+
+20240129记录
+***********************************************************************************************************************
+在bert_multilabel_cls.csv数据集下，这个版本是去掉了content长度过小，然后测试的数据集也是属于没有见过的测试数据集
+############# Test Start #############
+Label 谍照 - Precision: 0.9542, Recall: 0.6851, F1-Score: 0.7976
+Label 实车曝光 - Precision: 0.8433, Recall: 0.6024, F1-Score: 0.7028
+Label 配置曝光 - Precision: 0.5990, Recall: 0.6425, F1-Score: 0.6199
+Label 申报图 - Precision: 0.8858, Recall: 0.6463, F1-Score: 0.7474
+Label 预热 - Precision: 0.8852, Recall: 0.6636, F1-Score: 0.7586
+Label 新车上市 - Precision: 0.9299, Recall: 0.6098, F1-Score: 0.7366
+Label 预售 - Precision: 0.9024, Recall: 0.5725, F1-Score: 0.7005
+Label 发布亮相 - Precision: 0.8856, Recall: 0.6281, F1-Score: 0.7349
+Label 新车官图 - Precision: 0.8227, Recall: 0.4349, F1-Score: 0.5690
+Label 新车报价 - Precision: 0.9403, Recall: 0.5840, F1-Score: 0.7205
+Label 新车到店 - Precision: 0.8046, Recall: 0.3743, F1-Score: 0.5109
+Label 新车解析 - Precision: 0.9464, Recall: 0.9861, F1-Score: 0.9659
+Label 其他 - Precision: 0.0000, Recall: 0.0000, F1-Score: 0.0000
+Test Loss: 0.000367
+############# Test End #############
+
+下面是large transformer 的结果,也就是save_bert_wwmlarge_models
+Label 谍照 - Precision: 0.9202, Recall: 0.9260, F1-Score: 0.9231
+Label 实车曝光 - Precision: 0.8190, Recall: 0.8074, F1-Score: 0.8131
+Label 配置曝光 - Precision: 0.7310, Recall: 0.7794, F1-Score: 0.7544
+Label 申报图 - Precision: 0.9221, Recall: 0.9103, F1-Score: 0.9161
+Label 预热 - Precision: 0.8964, Recall: 0.8767, F1-Score: 0.8864
+Label 新车上市 - Precision: 0.9272, Recall: 0.9133, F1-Score: 0.9202
+Label 预售 - Precision: 0.9061, Recall: 0.9186, F1-Score: 0.9123
+Label 发布亮相 - Precision: 0.9175, Recall: 0.8908, F1-Score: 0.9039
+Label 新车官图 - Precision: 0.8459, Recall: 0.8345, F1-Score: 0.8401
+Label 新车报价 - Precision: 0.9299, Recall: 0.9208, F1-Score: 0.9253
+Label 新车到店 - Precision: 0.9268, Recall: 0.7917, F1-Score: 0.8539
+Label 新车解析 - Precision: 0.9815, Recall: 0.9887, F1-Score: 0.9851
+Label 其他 - Precision: 0.0000, Recall: 0.0000, F1-Score: 0.0000
+***********************************************************************************************************************
+ASR的数据统计
+谍照: 2926 (4.10%)
+实车曝光: 1644 (2.31%)
+配置曝光: 2863 (4.01%)
+申报图: 1457 (2.04%)
+预热: 7359 (10.32%)
+新车上市: 18480 (25.91%)
+预售: 6590 (9.24%)
+发布亮相: 10798 (15.14%)
+新车官图: 745 (1.04%)
+新车报价: 19589 (27.47%)
+新车到店: 430 (0.60%)
+新车解析: 38399 (53.84%)
+
+OCR的数据
+谍照: 2542 (4.10%)
+实车曝光: 1273 (2.06%)
+配置曝光: 2554 (4.12%)
+申报图: 1325 (2.14%)
+预热: 6519 (10.53%)
+新车上市: 15979 (25.80%)
+预售: 5815 (9.39%)
+发布亮相: 9402 (15.18%)
+新车官图: 631 (1.02%)
+新车报价: 17046 (27.53%)
+新车到店: 350 (0.57%)
+新车解析: 33106 (53.46%)
+
+Merge之后的数据
+谍照: 5468 (4.10%)
+实车曝光: 2917 (2.19%)
+配置曝光: 5417 (4.07%)
+申报图: 2782 (2.09%)
+预热: 13878 (10.42%)
+新车上市: 34459 (25.86%)
+预售: 12405 (9.31%)
+发布亮相: 20200 (15.16%)
+新车官图: 1376 (1.03%)
+新车报价: 36635 (27.50%)
+新车到店: 780 (0.59%)
+新车解析: 71505 (53.67%)
+
+
+***********************************************************************************************************************
+20240131实验结果
+这是video的数据基于bert-chinese模型
+Label 谍照 - Precision: 0.9630, Recall: 0.9342, F1-Score: 0.9484
+Label 实车曝光 - Precision: 0.9182, Recall: 0.8688, F1-Score: 0.8928
+Label 配置曝光 - Precision: 0.9060, Recall: 0.8485, F1-Score: 0.8763
+Label 申报图 - Precision: 0.9566, Recall: 0.8677, F1-Score: 0.9100
+Label 预热 - Precision: 0.9237, Recall: 0.9032, F1-Score: 0.9134
+Label 新车上市 - Precision: 0.9665, Recall: 0.9509, F1-Score: 0.9586
+Label 预售 - Precision: 0.9741, Recall: 0.9154, F1-Score: 0.9438
+Label 发布亮相 - Precision: 0.9557, Recall: 0.8959, F1-Score: 0.9248
+Label 新车官图 - Precision: 0.9149, Recall: 0.8740, F1-Score: 0.8940
+Label 新车报价 - Precision: 0.9454, Recall: 0.9540, F1-Score: 0.9497
+Label 新车到店 - Precision: 0.9425, Recall: 0.9061, F1-Score: 0.9239
+Label 新车解析 - Precision: 0.9511, Recall: 0.9835, F1-Score: 0.9671
+
+
+把video和news数据merge之后进行训练，然后数据分布是：
+Label: 谍照, Count: 8354, Proportion: 0.04
+Label: 实车曝光, Count: 5487, Proportion: 0.02
+Label: 配置曝光, Count: 10197, Proportion: 0.05
+Label: 申报图, Count: 4966, Proportion: 0.02
+Label: 预热, Count: 28486, Proportion: 0.13
+Label: 新车上市, Count: 65213, Proportion: 0.29
+Label: 预售, Count: 21557, Proportion: 0.10
+Label: 发布亮相, Count: 37196, Proportion: 0.16
+Label: 新车官图, Count: 3916, Proportion: 0.02
+Label: 新车报价, Count: 67806, Proportion: 0.30
+Label: 新车到店, Count: 1441, Proportion: 0.01
+Label: 新车解析, Count: 150277, Proportion: 0.67
+
+
+20240201实验结果
+这是video+news的数据基于bert-wwm-chinese模型(基于p0)
+Label 谍照 - Precision: 0.9785, Recall: 0.9479, F1-Score: 0.9630
+Label 实车曝光 - Precision: 0.8182, Recall: 0.9000, F1-Score: 0.8571
+Label 配置曝光 - Precision: 0.7391, Recall: 0.9444, F1-Score: 0.8293
+Label 申报图 - Precision: 0.9565, Recall: 0.9362, F1-Score: 0.9462
+Label 预热 - Precision: 0.9041, Recall: 0.9209, F1-Score: 0.9124
+Label 新车上市 - Precision: 0.9381, Recall: 0.9624, F1-Score: 0.9501
+Label 预售 - Precision: 0.9563, Recall: 0.9012, F1-Score: 0.9280
+Label 发布亮相 - Precision: 0.9242, Recall: 0.8512, F1-Score: 0.8862
+Label 新车官图 - Precision: 0.9737, Recall: 0.9487, F1-Score: 0.9610
+Label 新车报价 - Precision: 0.9548, Recall: 0.9373, F1-Score: 0.9460
+Label 新车到店 - Precision: 0.8182, Recall: 0.9474, F1-Score: 0.8780
+Label 新车解析 - Precision: 0.9933, Recall: 0.9761, F1-Score: 0.9846
+
+这是P1的bert-wwm-large-chinese的模型结果 (基于测试集，纯news数据集)
+Label 车系品牌解读 - Precision: 0.9693, Recall: 0.9630, F1-Score: 0.9662
+Label 单车导购 - Precision: 0.9114, Recall: 0.9267, F1-Score: 0.9190
+Label 对比导购 - Precision: 0.9554, Recall: 0.9572, F1-Score: 0.9563
+Label 多车导购 - Precision: 0.9277, Recall: 0.8516, F1-Score: 0.8880
+Label 购车手册 - Precision: 0.9392, Recall: 0.8997, F1-Score: 0.9190
+Label 买车技巧 - Precision: 0.9385, Recall: 0.8592, F1-Score: 0.8971
+Label 评测导购 - Precision: 0.9035, Recall: 0.9061, F1-Score: 0.9048
+Label 汽车分享 - Precision: 0.9448, Recall: 0.7290, F1-Score: 0.8230
+Label 试驾 - Precision: 0.8755, Recall: 0.9194, F1-Score: 0.8969
+Label 探店报价 - Precision: 0.8291, Recall: 0.7823, F1-Score: 0.8050
+Label 无解说车辆展示 - Precision: 0.8857, Recall: 0.7949, F1-Score: 0.8378
+Label 营销导购 - Precision: 0.9714, Recall: 0.7445, F1-Score: 0.8430
+
+*******************************************************************************************
+
+20240219实验记录
+
+    News Label Ratios:
+    交通政策: 0.22%
+    补贴政策: 0.07%
+    汽车油价: 0.96%
+    二手车限迁法规: 0.00%
+    价格行情: 0.16%
+    花边新闻: 26.34%
+    销量新闻: 40.85%
+    新闻聚合: 1.15%
+    人物观点: 1.05%
+    行业评论: 16.72%
+    汽车出口: 2.11%
+    新能源新闻: 9.36%
+    论坛峰会: 1.00%
+
+    Negative Label Ratios:
+    交通事故: 19.30%
+    自燃: 3.74%
+    维权事件: 8.68%
+    车辆减配: 0.13%
+    故障投诉: 41.28%
+    车辆召回: 21.07%
+    产能不足: 0.10%
+    车辆首撞: 0.19%
+    商家吐槽: 0.20%
+    爱车吐槽: 5.31%
+
+上面是实验数据分布
+
+20240222实验结果
+
+Label 交通政策 - Precision: 0.8478, Recall: 0.8966, F1-Score: 0.8715
+Label 补贴政策 - Precision: 0.8750, Recall: 0.8537, F1-Score: 0.8642
+Label 汽车油价 - Precision: 0.9873, Recall: 0.9749, F1-Score: 0.9811
+Label 二手车限迁法规 - Precision: 0.0000, Recall: 0.0000, F1-Score: 0.0000
+Label 价格行情 - Precision: 0.9853, Recall: 0.9178, F1-Score: 0.9504
+Label 花边新闻 - Precision: 0.9489, Recall: 0.9103, F1-Score: 0.9292
+Label 销量新闻 - Precision: 0.9591, Recall: 0.9626, F1-Score: 0.9608
+Label 新闻聚合 - Precision: 0.9696, Recall: 0.9640, F1-Score: 0.9668
+Label 人物观点 - Precision: 0.7300, Recall: 0.7934, F1-Score: 0.7604
+Label 行业评论 - Precision: 0.8678, Recall: 0.9110, F1-Score: 0.8889
+Label 汽车出口 - Precision: 0.8603, Recall: 0.8596, F1-Score: 0.8600
+Label 新能源新闻 - Precision: 0.8885, Recall: 0.8533, F1-Score: 0.8705
+Label 论坛峰会 - Precision: 0.8750, Recall: 0.8893, F1-Score: 0.8821
+
