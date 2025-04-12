@@ -48,7 +48,8 @@ LabelsClassifier4News is a machine learning project for multi-label news classif
    - Use scripts like `bert/classifier_v3/predict_p1.py` for prediction
 
 ## Dataset
-To obtain the dataset, please contact the author (wu.xiguanghua2014@gmail.com). Due to company policy restrictions, we cannot provide the complete dataset, but a portion is available for testing and research purposes.
+To obtain the dataset, please contact the author at ​​wu.xiguanghua2014@gmail.com​​. Due to company policy restrictions, we cannot provide the complete dataset, but a subset is available for testing and research purposes.
+The checkpoint will be released on ​​Figshare​​; the file size exceeds 1GB.
 
 ## Contact
 For any questions, please contact the project author
