@@ -13,6 +13,7 @@ import os
 import json
 from datetime import datetime
 from modelscope import snapshot_download, AutoModel, AutoTokenizer
+from transformers import TrainerCallback
 
 
 # Set up logging
@@ -179,6 +180,21 @@ def compute_metrics(eval_preds):
         'accuracy': accuracy
     }
 
+
+class LossCallback(TrainerCallback):
+    def __init__(self, output_dir):
+        self.output_dir = output_dir
+        self.losses = []
+        self.loss_file = os.path.join(output_dir, "training_losses.txt")
+        
+    def on_log(self, args, state, control, logs=None, **kwargs):
+        if logs is not None and "loss" in logs:
+            self.losses.append(logs["loss"])
+            # 实时写入文件
+            with open(self.loss_file, "a") as f:
+                f.write(f"Step {state.global_step}: {logs['loss']:.4f}\n")
+
+
 def train_qwen_model(
     model_name="",
     csv_path="",
@@ -243,6 +259,10 @@ def train_qwen_model(
         save_total_limit=2,
         remove_unused_columns=False
     )
+
+        # Initialize loss callback
+    loss_callback = LossCallback(output_dir)
+
     # Initialize trainer
     trainer = Trainer(
         model=model,
@@ -250,7 +270,8 @@ def train_qwen_model(
         train_dataset=train_dataset,
         eval_dataset=val_dataset,
         tokenizer=tokenizer,
-        compute_metrics=compute_metrics
+        compute_metrics=compute_metrics,
+        callbacks=[loss_callback]
     )
     
     # Train model
@@ -272,6 +293,9 @@ def train_qwen_model(
         logger.info(f"{metric_name}: {value:.4f}")
     
     return model, tokenizer, final_metrics
+
+
+
 
 def evaluate_trained_model(
     model_path,
@@ -361,7 +385,7 @@ def evaluate_trained_model(
 
 def run_experiments():
     """Run experiments with different LoRA ranks"""
-    ranks = [4, 16, 32]
+    ranks = [2, 4, 16, 32]
     results = {}
     
     # Create main output directory
@@ -406,7 +430,7 @@ def get_user_input():
             break
         print("无效输入，请重新输入")
     
-    print("\n请输入要使用的rank值（用空格分隔多个值，例如：4 8 16 32）")
+    print("\n请输入要使用的rank值（用空格分隔多个值，例如：2 4 8 16 32）")
     while True:
         try:
             ranks = [int(x) for x in input("请输入rank值: ").strip().split()]
