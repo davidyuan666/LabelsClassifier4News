@@ -1,0 +1,6 @@
+transformers 
+torch 
+pandas 
+peft 
+scikit-learn
+modelscope
