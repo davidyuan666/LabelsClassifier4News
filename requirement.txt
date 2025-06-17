@@ -4,3 +4,7 @@ pandas
 peft 
 scikit-learn
 modelscope
+seaborn
+tqdm
+pandas
+tf-keras
