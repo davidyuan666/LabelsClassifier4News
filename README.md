@@ -20,33 +20,52 @@ This project serves as the implementation for the scientific report research pap
 - Provides comprehensive experimental result analysis and visualization
 
 ## Project Structure
-├── bert/ # BERT-related model implementations
-│ ├── classifier_v1/ # Classifier v1 implementation
-│ ├── classifier_v2/ # Classifier v2 implementation
-│ ├── classifier_v3/ # Classifier v3 implementation
-│ ├── finetune/ # Model fine-tuning related code
-│ ├── models/ # Model definitions
-│ └── pretrain/ # Pre-trained models
-├── textcnn/ # TextCNN model implementation
-│ ├── models/ # Model definitions
-│ ├── train_eval.py # Training and evaluation code
-│ ├── run.py # Entry point
-│ └── run_test.py # Test run script
-├── utils/ # Utility functions
-├── deploy/ # Deployment-related code
-├── records/ # Training and experiment records
-├── dataset/ # Dataset
-├── plots/ # Charts and visualization results
-├── training_result/ # Training results
-├── ablation_results/ # Ablation study results
-├── error_analysis_results/ # Error analysis results
-├── other_threshold_results/ # Other threshold experiment results
-├── bert_ablation_study.py # BERT ablation study script
-├── error_analysis.py # Error analysis script
-├── threshold_based_classification.py # Threshold-based classification
-├── train_qwen.py # Qwen model training script
-├── data_analyzer.py # Data analysis tool
-└── test_resource.py # Resource testing script
+### Core Directories
+- **`bert/`** - BERT-related model implementations
+  - `classifier_v1/` - Classifier v1 implementation
+  - `classifier_v2/` - Classifier v2 implementation
+  - `classifier_v3/` - Classifier v3 implementation
+  - `finetune/` - Model fine-tuning related code
+  - `models/` - Model definitions
+  - `pretrain/` - Pre-trained models
+
+- **`textcnn/`** - TextCNN model implementation
+  - `models/` - Model definitions
+  - `train_eval.py` - Training and evaluation code
+  - `run.py` - Entry point
+  - `run_test.py` - Test run script
+
+- **`utils/`** - Utility functions
+  - `data/` - Data processing utilities
+  - `embedding_utils.py` - Embedding utilities
+  - `csv_util.py` - CSV processing utilities
+
+- **`deploy/`** - Deployment-related code
+  - `cls_infer/` - Classification inference
+  - `gpt_infer/` - GPT inference
+
+### Data and Results
+- **`dataset/`** - Dataset storage
+- **`records/`** - Training and experiment records
+- **`training_result/`** - Training results
+- **`plots/`** - Charts and visualization results
+- **`ablation_results/`** - Ablation study results
+- **`error_analysis_results/`** - Error analysis results
+- **`other_threshold_results/`** - Other threshold experiment results
+
+### Analysis Scripts
+- **`bert_ablation_study.py`** - BERT ablation study script
+- **`error_analysis.py`** - Error analysis script
+- **`threshold_based_classification.py`** - Threshold-based classification
+- **`train_qwen.py`** - Qwen model training script
+- **`data_analyzer.py`** - Data analysis tool
+- **`test_resource.py`** - Resource testing script
+
+### Configuration
+- **`requirement.txt`** - Project dependencies
+- **`Makefile`** - Build automation
+- **`.gitignore`** - Git ignore rules
+- **`experiment_results.zip`** - Complete experimental results
 
 
 ## Requirements
