@@ -135,6 +135,4 @@ This project is the implementation for the following scientific report research 
 * **DOI:** https://doi.org/10.1038/s41598-025-27497-6
 * **Published:** 15 December 2025
 
-**Citation:**
-Yuan, D., Liang, G., Liu, B. et al. Qwen TextCNN and BERT models for enhanced multilabel news classification in mobile apps. Sci Rep 15, 43787 (2025). https://doi.org/10.1038/s41598-025-27497-6
 
