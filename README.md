@@ -129,8 +129,17 @@ The project contains detailed experimental results and analysis:
 - `other_threshold_results/`: Threshold optimization experiment results
 - `plots/`: Various charts and visualization results
 
-## Contact
-For any questions, please contact the project author.
+**"Qwens vs. TextCNN, BERT: Multi-label News Classification for Mobile Apps"**
 
-## License
-Please refer to the project license file.
+## 📄 Publication Information
+This project is the implementation for the following scientific report research paper:
+
+**Qwen TextCNN and BERT models for enhanced multilabel news classification in mobile apps**
+
+* **Authors:** Yuan, D., Liang, G., Liu, B. et al.
+* **Journal:** *Sci Rep* 15, 43787 (2025).
+* **DOI:** https://doi.org/10.1038/s41598-025-27497-6
+* **Published:** 15 December 2025
+
+**Citation:**
+Yuan, D., Liang, G., Liu, B. et al. Qwen TextCNN and BERT models for enhanced multilabel news classification in mobile apps. Sci Rep 15, 43787 (2025). https://doi.org/10.1038/s41598-025-27497-6
