@@ -3,11 +3,6 @@
 ## Project Overview
 LabelsClassifier4News is a machine learning project specifically designed for multi-label news classification. This project implements various text classification models, including BERT-based deep learning models and traditional models like TextCNN, capable of performing multi-label classification predictions on news text.
 
-This project serves as the implementation for the scientific report research paper:
-
-**"Qwens vs. TextCNN, BERT: Multi-label News Classification for Mobile Apps"**
-
-
 
 ## Key Features
 - Supports text classification using pre-trained models like BERT and Chinese RoBERTa
@@ -129,7 +124,6 @@ The project contains detailed experimental results and analysis:
 - `other_threshold_results/`: Threshold optimization experiment results
 - `plots/`: Various charts and visualization results
 
-**"Qwens vs. TextCNN, BERT: Multi-label News Classification for Mobile Apps"**
 
 ## 📄 Publication Information
 This project is the implementation for the following scientific report research paper:
@@ -143,3 +137,4 @@ This project is the implementation for the following scientific report research 
 
 **Citation:**
 Yuan, D., Liang, G., Liu, B. et al. Qwen TextCNN and BERT models for enhanced multilabel news classification in mobile apps. Sci Rep 15, 43787 (2025). https://doi.org/10.1038/s41598-025-27497-6
+
